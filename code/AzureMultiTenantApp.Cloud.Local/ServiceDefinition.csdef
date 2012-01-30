@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="AzureMultiTenantApp.Cloud.Local" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
+  <WebRole name="AzureMultiTenantApp.Web" vmsize="Small">
+    <Runtime executionContext="elevated" />
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="HttpIn" endpointName="HttpIn" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <Endpoints>
+      <InputEndpoint name="HttpIn" protocol="http" port="80" />
+      <InputEndpoint name="HttpsIn" protocol="tcp" port="443" localPort="443" />
+      <!-- unused, just there so instance discovery works -->
+      <InternalEndpoint name="UnusedInternal" protocol="http" port="88" />
+    </Endpoints>
+    <Imports>
+      <Import moduleName="Diagnostics" />
+    </Imports>
+    <LocalResources>
+      <LocalStorage name="Sites" cleanOnRoleRecycle="true" sizeInMB="5000" />
+      <LocalStorage name="TempSites" cleanOnRoleRecycle="true" sizeInMB="5000" />
+    </LocalResources>
+    <ConfigurationSettings>
+      <Setting name="DataConnectionString" />
+      <Setting name="SitesContainerName" />
+      <Setting name="DirectoriesToExclude" />
+      <Setting name="SyncIntervalInSeconds" />
+      <Setting name="AdminUserName" />
+      <Setting name="AdminUserPassword" />
+      <Setting name="TraceEventTypeFilter" />
+    </ConfigurationSettings>
+  </WebRole>
+</ServiceDefinition>

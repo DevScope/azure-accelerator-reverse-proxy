@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sample xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/ContentFramework.Core.Models">
+	<Id>WindowsAzure\WAAWebRoles</Id>
+	<Author>
+		<Blog></Blog>
+		<Email></Email>
+		<Name></Name>
+	</Author>
+	<Title>Windows Azure Accelerator for Web Roles</Title>
+	<Description>The Windows Azure Accelerator for Web Roles allows you to create Windows Azure Web Roles that can host multiple sites on multiple instances and use Web Deploy to deploy your sites in seconds.</Description>
+	<Setup ConversionType="None">.\Setup.cmd</Setup>
+	<Version>1.0.0</Version>
+	<Source>.\Samples</Source>
+</Sample>

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Models.WebSiteModel>
+@{
+    ViewBag.Title = "Web Sites";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>
+    Web Sites</h2>
+<p>
+    @Html.ActionLink("new web site", "Create")
+</p>
+
+@if (this.Model != null && this.Model.Count() > 0)
+{
+    <table>
+        <tr>
+            <th>IIS Site Name</th>
+            <th>Description</th>
+            <th>Preview</th>
+            <th></th>
+        </tr>
+        @{
+        var i = 0;
+        }
+        @foreach (var item in this.Model)
+        {
+            i++;
+    
+            <tr class="d@(i % 2)">
+                <td class="left-aligned">
+                    @item.Name
+                </td>
+                <td class="left-aligned">
+                    @item.Description
+                </td>
+                <td class="left-aligned" style="font-size: 13px">
+                    Site: <a href='@item.Url'>@item.Url</a><br />
+
+                    @if (item.TestUrl != null)
+                    {
+                        <span>Test site: <a href='@item.TestUrl'>@item.TestUrl</a></span>
+                    }
+                    else
+                    {
+                        <span>The test site is not enabled</span>
+                    }
+                </td>
+                <td>
+                    <a href="/WebSite/Edit/@item.Id" title="Edit"><span class="ui-icon ui-icon-pencil" style="float:left; margin-left:10px;" /></a>
+                    <a class="button-delete" href="/WebSite/Delete/@item.Id" title="Delete"><span class="ui-icon ui-icon-trash" style="float:left; margin-left:10px;" /></a>
+                    <a href="/Sync?webSiteName=@item.Name" title="Status"><span class="ui-icon ui-icon-info" style="float:left; margin-left:10px;" /></a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div class="note">
+        There are no web sites configured. Use the @Html.ActionLink("new web site", "Create") page to add a new web site to your Windows Azure Accelerator for Web Roles.
+    </div>
+}
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $(function () {
+            $(".button-delete").click(function () {
+                return confirm("Are you sure you wish to delete this item?");
+            });
+        });
+    });
+</script>

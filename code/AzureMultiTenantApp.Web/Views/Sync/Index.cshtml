@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Models.SyncStatusModel>
+@{
+    ViewBag.Title = "Sync Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>
+    Sync Status for '@ViewBag.WebSiteName' web site</h2>
+<p>
+    @Html.ActionLink("view full log", "Log", new { count = 100, level = "All" })
+</p>
+
+<table>
+    <tr>
+        <th>Role Instance Id</th>
+        <th>Status</th>
+        <th>DateTime (UTC)</th>
+    </tr>
+    @{
+        var i = 0;
+    }
+    @foreach (var item in this.Model)
+    {
+        i++;
+    
+        <tr class="d@(i % 2)">
+            <td class="left-aligned">
+                @item.RoleInstanceId
+            </td>
+            <td>
+                <div class="status">
+                    @item.Status
+                </div>
+            </td>
+            <td>
+                @item.SyncTimestamp
+            </td>
+        </tr>
+    }
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $(".status").each(function () {
+            var syncStatus = $.trim($(this).html()).toLowerCase();
+            var color = "";
+
+            switch (syncStatus) {
+                case "notcreated":
+                    color = "#FF6A00";
+                    break;
+                case "created":
+                    color = "#B2B200"
+                    break;
+                case "deployed":
+                    color = "#007F0E";
+                    break;
+                case "error":
+                    color = "#FF0000";
+                    break;
+            }
+
+            if (color != "") {
+                $(this).css("color", color);
+            }
+        });
+    });
+</script>

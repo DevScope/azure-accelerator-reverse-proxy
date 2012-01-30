@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Models.CertificateModel>
+@{
+    ViewBag.Title = "Certificates";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>
+    Certificates</h2>
+<p>
+    @Html.ActionLink("upload certificate", "Create")
+</p>
+
+@if (this.Model != null && this.Model.Count() > 0)
+{
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+        @{
+        var i = 0;
+        }
+        @foreach (var item in this.Model)
+        {
+            i++;
+    
+            <tr class="d@(i % 2)">
+                <td class="left-aligned">
+                    @item.Name
+                </td>
+                <td class="left-aligned">
+                    @item.Description
+                </td>
+                <td>
+                    <a href="/Certificate/Details/@item.Id" title="Details"><span class="ui-icon ui-icon-note" style="float:left; margin-right:10px;" /></a>
+                    <a class="button-delete" href="/Certificate/Delete/@item.Id" title="Delete"><span class="ui-icon ui-icon-trash" style="float:left; margin-right:10px;" /></a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div class="note">
+        There are no certificates configured. Upload your certificates for SSL bindings @Html.ActionLink("here", "Create").
+    </div>
+}
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $(function () {
+            $(".button-delete").click(function () {
+                return confirm("Are you sure you wish to delete this item?");
+            });
+        });
+    });
+</script>

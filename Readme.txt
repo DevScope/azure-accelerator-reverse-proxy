@@ -1,0 +1,2 @@
+Run the StartHere.cmd to scan your system with the required dependencies.
+This will also prompt you to install a Project Template for Visual Studio 2010 named "Windows Azure Accelerator for Web Roles".
