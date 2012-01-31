@@ -34,6 +34,7 @@
       <Setting name="SyncIntervalInSeconds" />
       <Setting name="AdminUserName" />
       <Setting name="AdminUserPassword" />
+      <Setting name="TraceEventTypeFilter" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>

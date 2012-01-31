@@ -15,6 +15,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEEF7rZmMJyaEREi+EJC4WpUwDQYJKoZIhvcNAQEBBQAEggEAQrruo8G67TRXvYsMWJQsLywZTz1X7KvEeyrCH2OtgmAzw/LoNrrD8xZMCuTcExlueCsiMjCn1utf3/Zvs+6CnyeZCpRfE3Px8giMEg2qDLJYY9Q85qnSYaU8Z1VEwZLtWH2FG9lgsXYaGyd2/GWeITCFOiPjBvRheB6dfG2LMXaj7gYe0MOinqqTpAbsdE1yRsU55iUmCpTbuGjXpQzUsOQtW5ZriQR3JfSEtXVWBhWnRVRVInCtxI/vlAHiLbtjwOiyCQOTlgjOvnz2ovb1Ykzi9dzrLGEMYTldeJffKD/OzJHdGBIkdjW/4BJORc7ZO4+7tLXqe7h9MBzaw2AEATAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECDHnafJ4LBBbgBBpTi79EDhW34Woo0JED7Xx" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2013-01-30T23:59:59.0000000-08:00" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+      <Setting name="TraceEventTypeFilter" value="Information" />
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="B6E8A99CB3B0174C053DAF5A48DACB504C5889EC" thumbprintAlgorithm="sha1" />
