@@ -5,5 +5,7 @@
     public interface ISyncService
     {
         void SyncForever(TimeSpan interval);
+
+        void Start();
     }
 }

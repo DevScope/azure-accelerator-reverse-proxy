@@ -84,6 +84,7 @@
                 Environment.SetEnvironmentVariable("TEMP", localTempPath);
 
                 this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
+                this.syncService.Start();
                 this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
             }
             catch (Exception ex)
@@ -143,7 +144,7 @@
             string resourcePath = RoleEnvironment.GetLocalResource(localResourceName).RootPath.TrimEnd('\\');
 
             var localDataSec = Directory.GetAccessControl(resourcePath);
-            localDataSec.AddAccessRule(new FileSystemAccessRule("Everyone", FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
+            localDataSec.AddAccessRule(new FileSystemAccessRule(new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
             Directory.SetAccessControl(resourcePath, localDataSec);
 
             return resourcePath;
