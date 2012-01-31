@@ -13,6 +13,7 @@
     public class WebSiteControllerTests
     {
         private IWebSiteRepository webSiteRepository;
+        private ICertificateRepository certificateRepository;
         private AzureTable<WebSiteRow> webSiteTable;
         private AzureTable<BindingRow> bindingTable;
         private WebSiteController controller;
@@ -22,10 +23,11 @@
         {
             this.webSiteTable = new AzureTable<WebSiteRow>(CloudStorageAccount.DevelopmentStorageAccount, "WebSitesTest");
             this.bindingTable = new AzureTable<BindingRow>(CloudStorageAccount.DevelopmentStorageAccount, "BindingsTest");
+            this.certificateRepository = new CertificateRepository(CloudStorageAccount.DevelopmentStorageAccount, "CertificatesTest", "certificatestest");
             this.webSiteTable.CreateIfNotExist();
             this.bindingTable.CreateIfNotExist();
             this.webSiteRepository = new WebSiteRepository(this.webSiteTable, this.bindingTable);
-            this.controller = new WebSiteController(this.webSiteRepository);
+            this.controller = new WebSiteController(this.webSiteRepository, this.certificateRepository);
         }
 
         [TestMethod]

@@ -18,15 +18,24 @@
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.Diagnostics.Management;
     using Microsoft.WindowsAzure.ServiceRuntime;
-    using System.Threading;
 
     public class WebRole : RoleEntryPoint
     {
-        
+        private static string wadConnectionString = "Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString";
         private ISyncStatusRepository syncStatusRepository;
         private ISyncService syncService;
 
-        
+        public static IEnumerable<string> ConfiguredCounters
+        {
+            get
+            {
+                yield return @"\Processor(_Total)\% Processor Time";
+                yield return @"\Memory\Available MBytes";
+                yield return @"\ASP.NET Applications(__Total__)\Requests Total";
+                yield return @"\ASP.NET Applications(__Total__)\Requests/Sec";
+                yield return @"\ASP.NET\Requests Queued";
+            }
+        }
 
         public override bool OnStart()
         {
@@ -40,12 +49,17 @@
                 configSetter(configuration);
             });
 
-            DiagnosticHelper.ConfigureDiagnosticMonitor();
+            ConfigureDiagnosticMonitor();
+
+            RoleEnvironment.Changing += this.RoleEnvironmentChanging;
+            RoleEnvironment.Changed += this.RoleEnvironmentChanged;
+
+            ConfigureTraceListener(RoleEnvironment.GetConfigurationSettingValue("TraceEventTypeFilter"));
 
             this.syncStatusRepository = new SyncStatusRepository();
             this.UpdateAllSitesSyncStatus(true);
             
-            Trace.TraceInformation("WebRole.OnStart");
+            TraceHelper.TraceInformation("WebRole.OnStart");
 
             return base.OnStart();
         }
@@ -54,7 +68,7 @@
         {
             try
             {
-                Trace.TraceInformation("WebRole.Run");
+                TraceHelper.TraceInformation("WebRole.Run");
 
                 // Initialize SyncService
                 var localSitesPath = GetLocalResourcePathAndSetAccess("Sites");
@@ -70,27 +84,58 @@
                 Environment.SetEnvironmentVariable("TEMP", localTempPath);
 
                 this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
-                //this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
-
-                while (true)
-                {
-                    Thread.Sleep(10000);
-                }
-
+                this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
             }
             catch (Exception ex)
             {
-                Trace.TraceError(ex.TraceInformation());
+                TraceHelper.TraceError(ex.TraceInformation());
             }
         }
 
         public override void OnStop()
         {
-            Trace.TraceInformation("WebRole.OnStop");
+            TraceHelper.TraceInformation("WebRole.OnStop");
 
             this.UpdateAllSitesSyncStatus(false);
 
             base.OnStop();
+        }
+
+        private static void ConfigureDiagnosticMonitor()
+        {
+            var storageAccount = CloudStorageAccount.FromConfigurationSetting(wadConnectionString);
+            var roleInstanceDiagnosticManager = storageAccount.CreateRoleInstanceDiagnosticManager(RoleEnvironment.DeploymentId, RoleEnvironment.CurrentRoleInstance.Role.Name, RoleEnvironment.CurrentRoleInstance.Id);
+            var diagnosticMonitorConfiguration = roleInstanceDiagnosticManager.GetCurrentConfiguration();
+            if (diagnosticMonitorConfiguration == null)
+            {
+                diagnosticMonitorConfiguration = DiagnosticMonitor.GetDefaultInitialConfiguration();
+            }
+
+            // File-based logs
+            diagnosticMonitorConfiguration.Directories.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
+            diagnosticMonitorConfiguration.Directories.BufferQuotaInMB = 100;
+
+            // Windows Event logs
+            diagnosticMonitorConfiguration.WindowsEventLog.DataSources.Add("Application!*");
+            diagnosticMonitorConfiguration.WindowsEventLog.DataSources.Add("System!*");
+            diagnosticMonitorConfiguration.WindowsEventLog.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
+
+            // Performance Counters
+            ConfiguredCounters.ToList().ForEach(
+                counter =>
+                {
+                    var counterConfiguration = new PerformanceCounterConfiguration
+                    { 
+                        CounterSpecifier = counter,
+                        SampleRate = TimeSpan.FromSeconds(30)
+                    };
+
+                    diagnosticMonitorConfiguration.PerformanceCounters.DataSources.Add(counterConfiguration);
+                });
+            
+            diagnosticMonitorConfiguration.PerformanceCounters.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
+
+            roleInstanceDiagnosticManager.SetCurrentConfiguration(diagnosticMonitorConfiguration);
         }
 
         private static string GetLocalResourcePathAndSetAccess(string localResourceName)
@@ -102,6 +147,34 @@
             Directory.SetAccessControl(resourcePath, localDataSec);
 
             return resourcePath;
+        }
+
+        private static void ConfigureTraceListener(string traceEventTypeFilter)
+        {
+            SourceLevels sourceLevels = SourceLevels.All;
+            if (Enum.TryParse<SourceLevels>(traceEventTypeFilter, true, out sourceLevels))
+            {
+                TraceHelper.Configure(sourceLevels);
+            }
+        }
+
+        private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
+        {
+            // for any configuration setting change except TraceEventTypeFilter
+            if (e.Changes.OfType<RoleEnvironmentConfigurationSettingChange>().Any(change => change.ConfigurationSettingName != "TraceEventTypeFilter"))
+            {
+                // Set e.Cancel to true to restart this role instance
+                e.Cancel = true;
+            }
+        }
+
+        private void RoleEnvironmentChanged(object sender, RoleEnvironmentChangedEventArgs e)
+        {
+            // configure trace listener for any changes to EnableTableStorageTraceListener 
+            if (e.Changes.OfType<RoleEnvironmentConfigurationSettingChange>().Any(change => change.ConfigurationSettingName == "TraceEventTypeFilter"))
+            {
+                ConfigureTraceListener(RoleEnvironment.GetConfigurationSettingValue("TraceEventTypeFilter"));               
+            }
         }
 
         private void UpdateAllSitesSyncStatus(bool isOnline)
@@ -125,7 +198,7 @@
                 };
 
                 this.syncStatusRepository.UpdateStatus(newSyncStatus);
-            }
+            } 
         }
     }
 }

@@ -19,5 +19,3 @@ Output/
 packages/
 DeployConfiguration.xml
 csx/
-*.Development.cscfg
-Development.azurePubxml

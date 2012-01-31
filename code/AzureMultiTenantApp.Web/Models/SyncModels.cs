@@ -3,6 +3,21 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
+    public class LogMessageModel
+    {
+        [Display(Name = "LogTimestamp")]
+        public DateTime LogTimestamp { get; set; }
+
+        [Display(Name = "Level")]
+        public string Level { get; set; }
+
+        [Display(Name = "Message")]
+        public string Message { get; set; }
+
+        [Display(Name = "RoleInstanceId")]
+        public string RoleInstanceId { get; set; }
+    }
+
     public class SyncStatusModel
     {
         [Display(Name = "RoleInstanceId")]

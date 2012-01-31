@@ -13,15 +13,17 @@
     public class WebSiteController : Controller
     {
         private readonly IWebSiteRepository webSiteRepository;
+        private readonly ICertificateRepository certificateRepository;
 
         public WebSiteController()
-            : this(new WebSiteRepository())
+            : this(new WebSiteRepository(), new CertificateRepository())
         {
         }
 
-        public WebSiteController(IWebSiteRepository webSiteRepository)
+        public WebSiteController(IWebSiteRepository webSiteRepository, ICertificateRepository certificateRepository)
         {
             this.webSiteRepository = webSiteRepository;
+            this.certificateRepository = certificateRepository;
         }
 
         public ActionResult Index()
@@ -42,7 +44,7 @@
 
         public ActionResult Edit(Guid id)
         {
-            var website = this.webSiteRepository.RetrieveWebSiteWithBindings(id);
+            var website = this.webSiteRepository.RetrieveWebSiteWithBindingsAndCertificates(id, this.certificateRepository);
             var model = new WebSiteModel
             {
                 Id = website.Id,
@@ -97,7 +99,7 @@
                 Protocol = "http",
                 Port = 80,
                 IpAddress = "*",
-                //Certificates = this.GetCertificatesList(),
+                Certificates = this.GetCertificatesList(),
                 EnableTestChildApplication = true,
                 EnableCDNChildApplication = true
             };
@@ -112,13 +114,13 @@
             {
                 if (!this.ValidateDuplicatedSites(model.Name))
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
 
                 if (!this.ValidateDuplicatedBinding(model.HostName, model.Protocol, model.Port))
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
 
@@ -147,13 +149,13 @@
                 }
                 else
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
             }
             catch
             {
-                //model.Certificates = this.GetCertificatesList();
+                model.Certificates = this.GetCertificatesList();
                 return View(model);
             }
         }
@@ -177,7 +179,7 @@
                 Port = 80,
                 IpAddress = "*",
                 CertificateId = null,
-                //Certificates = this.GetCertificatesList()
+                Certificates = this.GetCertificatesList()
             };
 
             return View(model);
@@ -190,7 +192,7 @@
             {
                 if (!this.ValidateDuplicatedBinding(model.HostName, model.Protocol, model.Port))
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
 
@@ -211,13 +213,13 @@
                 }
                 else
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
             }
             catch
             {
-                //model.Certificates = this.GetCertificatesList();
+                model.Certificates = this.GetCertificatesList();
                 return View(model);
             }
         }
@@ -236,7 +238,7 @@
                 Port = binding.Port,
                 HostName = binding.HostName,
                 CertificateId = binding.CertificateId,
-                //Certificates = this.GetCertificatesList()
+                Certificates = this.GetCertificatesList()
             };
 
             return View(model);
@@ -249,7 +251,7 @@
             {
                 if (!this.ValidateDuplicatedBinding(model.HostName, model.Protocol, model.Port))
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
 
@@ -268,13 +270,13 @@
                 }
                 else
                 {
-                    //model.Certificates = this.GetCertificatesList();
+                    model.Certificates = this.GetCertificatesList();
                     return View(model);
                 }
             }
             catch
             {
-                //model.Certificates = this.GetCertificatesList();
+                model.Certificates = this.GetCertificatesList();
                 return View(model);
             }
         }
@@ -285,6 +287,18 @@
             this.webSiteRepository.RemoveBinding(id);
 
             return RedirectToAction("Edit", new { id = binding.WebSiteId });
+        }
+
+        private IEnumerable<SelectListItem> GetCertificatesList()
+        {
+            return this.certificateRepository.RetrieveCertificates()
+                .Select(
+                    c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name
+                    })
+                .ToList();
         }
 
         private bool ValidateCertificateAndPort(Guid? certificateId, int port, string protocol)

@@ -19,9 +19,9 @@
       <InternalEndpoint name="UnusedInternal" protocol="http" port="88" />
     </Endpoints>
     <Imports>
+      <Import moduleName="Diagnostics" />
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
-      <Import moduleName="Diagnostics" />
     </Imports>
     <LocalResources>
       <LocalStorage name="Sites" cleanOnRoleRecycle="true" sizeInMB="5000" />
@@ -34,8 +34,7 @@
       <Setting name="SyncIntervalInSeconds" />
       <Setting name="AdminUserName" />
       <Setting name="AdminUserPassword" />
+      <Setting name="TraceEventTypeFilter" />
     </ConfigurationSettings>
-    <Certificates>
-    </Certificates>
   </WebRole>
 </ServiceDefinition>
