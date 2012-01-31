@@ -4,10 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
-    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Diagnostics;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions;
     using Microsoft.WindowsAzure;
+    using System.Diagnostics;
 
     public class CertificateRepository : ICertificateRepository
     {
@@ -123,8 +123,8 @@
             var cert = new X509Certificate2(content, certificate.Password);
             store.Open(OpenFlags.ReadWrite);
             store.Add(cert);
-            
-            TraceHelper.TraceInformation("Certificate {0} installed; Friendly Name: {1}", certificate.Name, cert.FriendlyName);
+
+            Trace.TraceInformation("Certificate {0} installed; Friendly Name: {1}", certificate.Name, cert.FriendlyName);
 
             return cert;
         }

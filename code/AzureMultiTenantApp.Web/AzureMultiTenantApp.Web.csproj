@@ -106,7 +106,6 @@
     <Compile Include="Core\Extensions\ExceptionExtensions.cs" />
     <Compile Include="Core\Extensions\ModelExtensions.cs" />
     <Compile Include="Core\Extensions\TableStorageExtensionMethods.cs" />
-    <Compile Include="Core\Diagnostics\TraceHelper.cs" />
     <Compile Include="Core\Helpers\FilesHelper.cs" />
     <Compile Include="Core\Services\IIISManager.cs" />
     <Compile Include="Core\Services\IISManager.cs" />

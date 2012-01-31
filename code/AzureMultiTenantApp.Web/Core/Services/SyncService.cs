@@ -6,7 +6,6 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
-    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Diagnostics;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Helpers;
@@ -65,16 +64,14 @@
             this.container.CreateIfNotExist();
         }
 
-        public void Start()
-        {
-            TraceHelper.TraceInformation("Sync service starting...");
-            this.SyncOnce();
-        }
-
         public void SyncForever(TimeSpan interval)
         {
             var blobStop = this.container.GetBlobReference(BlobStopName);
             var lastHeartbeat = DateTime.MinValue;
+
+            // Always sync once in case the role has been reimaged.
+            SyncOnce();
+            Thread.Sleep(interval);
 
             while (true)
             {
@@ -83,7 +80,7 @@
                 var currentTime = DateTime.Now;
                 if ((currentTime - lastHeartbeat).Minutes > 15)
                 {
-                    TraceHelper.TraceInformation("SyncService - Synchronization is {0}...", isPaused ? "paused" : "active");
+                    Trace.TraceInformation("SyncService - Synchronization is {0}...", isPaused ? "paused" : "active");
                     lastHeartbeat = currentTime;
                 }
 
@@ -98,7 +95,7 @@
 
         private void SyncOnce()
         {
-            TraceHelper.TraceVerbose("SyncService - Synchronizing role instances...");
+            Trace.TraceInformation("SyncService - Synchronizing role instances...");
 
             try
             {
@@ -106,7 +103,7 @@
             }
             catch (Exception e)
             {
-                TraceHelper.TraceError("SyncService [Table => IIS] - Failed to update IIS site information from table storage.{0}{1}", Environment.NewLine, e.TraceInformation());
+                Trace.TraceError("SyncService [Table => IIS] - Failed to update IIS site information from table storage.{0}{1}", Environment.NewLine, e.TraceInformation());
             }
 
             try
@@ -115,7 +112,7 @@
             }
             catch (Exception e)
             {
-                TraceHelper.TraceError("SyncService [Blob => Local Storage] - Failed to synchronize local site folders and blob storage.{0}{1}", Environment.NewLine, e.TraceInformation());
+                Trace.TraceError("SyncService [Blob => Local Storage] - Failed to synchronize local site folders and blob storage.{0}{1}", Environment.NewLine, e.TraceInformation());
             }
 
             try
@@ -124,7 +121,7 @@
             }
             catch (Exception e)
             {
-                TraceHelper.TraceError("SyncService [Local Storage => IIS] - Failed to deploy MSDeploy package in local storage to IIS.{0}{1}", Environment.NewLine, e.TraceInformation());
+                Trace.TraceError("SyncService [Local Storage => IIS] - Failed to deploy MSDeploy package in local storage to IIS.{0}{1}", Environment.NewLine, e.TraceInformation());
             }
 
             try
@@ -133,10 +130,10 @@
             }
             catch (Exception e)
             {
-                TraceHelper.TraceError("SyncService [IIS => Local Storage] - Failed to create an MSDeploy package in local storage from updates in IIS.{0}{1}", Environment.NewLine, e.TraceInformation());
+                Trace.TraceError("SyncService [IIS => Local Storage] - Failed to create an MSDeploy package in local storage from updates in IIS.{0}{1}", Environment.NewLine, e.TraceInformation());
             }
 
-            TraceHelper.TraceVerbose("SyncService - Synchronization completed.");
+            Trace.TraceInformation("SyncService - Synchronization completed.");
         }
 
         public static bool IsSyncEnabled()
@@ -151,7 +148,7 @@
             var blobStop = GetCloudBlobStop();
             blobStop.DeleteIfExists();
 
-            TraceHelper.TraceInformation("SyncService - Synchronization resumed.");
+            Trace.TraceInformation("SyncService - Synchronization resumed.");
         }
 
         public static void SyncDisable()
@@ -162,7 +159,7 @@
                 blobStop.UploadText(string.Empty); 
             }
 
-            TraceHelper.TraceInformation("SyncService - Synchronization paused.");
+            Trace.TraceInformation("SyncService - Synchronization paused.");
         }
 
         private static CloudBlob GetCloudBlobStop()
@@ -193,7 +190,7 @@
             }
             catch (PathTooLongException e)
             {
-                TraceHelper.TraceError("SyncService - Failed to retrieve last modified time.{0}{1}", Environment.NewLine, e.TraceInformation());
+                Trace.TraceError("SyncService - Failed to retrieve last modified time.{0}{1}", Environment.NewLine, e.TraceInformation());
 
                 return DateTime.MinValue;
             }
@@ -322,7 +319,7 @@
                     else
                     {
                         Directory.CreateDirectory(Path.Combine(this.localTempPath, Path.GetDirectoryName(path)));
-                        TraceHelper.TraceInformation("SyncService [Blob => Local Storage] - Downloading file: '{0}'", path);
+                        Trace.TraceInformation("SyncService [Blob => Local Storage] - Downloading file: '{0}'", path);
 
                         using (var stream = File.Open(tempPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete))
                         {
@@ -358,7 +355,7 @@
 
         private void DeploySitesFromLocal()
         {
-            TraceHelper.TraceVerbose("SyncService [Local Storage => IIS] - Site deploy times: {0}", string.Join(",", this.siteDeployTimes.Select(t => t.Key + " - " + t.Value).ToArray()));
+            Trace.TraceInformation("SyncService [Local Storage => IIS] - Site deploy times: {0}", string.Join(",", this.siteDeployTimes.Select(t => t.Key + " - " + t.Value).ToArray()));
 
             foreach (var site in Directory.EnumerateDirectories(this.localTempPath).Select(d => Path.GetFileName(d).ToLowerInvariant()))
             {
@@ -391,11 +388,11 @@
                         }
 
                         var packageLastModifiedTime = Directory.GetLastWriteTimeUtc(packageFile);
-                        TraceHelper.TraceVerbose("SyncService [Local Storage => IIS] - Package last modified time: '{0}'", packageLastModifiedTime);
+                        Trace.TraceInformation("SyncService [Local Storage => IIS] - Package last modified time: '{0}'", packageLastModifiedTime);
 
                         if (this.siteDeployTimes[site] < packageLastModifiedTime)
                         {
-                            TraceHelper.TraceInformation("SyncService [Local Storage => IIS] - Deploying the package '{0}' to '{1}' with MSDeploy", packageFile, sitePath);
+                            Trace.TraceInformation("SyncService [Local Storage => IIS] - Deploying the package '{0}' to '{1}' with MSDeploy", packageFile, sitePath);
 
                             try
                             {
@@ -424,7 +421,7 @@
         /// </summary>
         private void PackageSitesToLocal()
         {
-            TraceHelper.TraceVerbose("SyncService [IIS => Local Storage] - Site deploy times: {0}", string.Join(",", this.siteDeployTimes.Select(t => t.Key + " - " + t.Value).ToArray()));
+            Trace.TraceInformation("SyncService [IIS => Local Storage] - Site deploy times: {0}", string.Join(",", this.siteDeployTimes.Select(t => t.Key + " - " + t.Value).ToArray()));
 
             using (var serverManager = new ServerManager())
             {
@@ -442,9 +439,10 @@
                             this.siteDeployTimes.Add(siteName, siteLastModifiedTime);
                         }
 
-                        TraceHelper.TraceVerbose("SyncService [IIS => Local Storage] - Site last modified time: '{0}'", siteLastModifiedTime);
+                        Trace.TraceInformation("SyncService [IIS => Local Storage] - Site last modified time: '{0}'", siteLastModifiedTime);
 
-                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime > DateTime.UtcNow.AddSeconds(30))
+                        //if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime > DateTime.UtcNow.AddSeconds(30))
+                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime)
                         {
                             this.UpdateSyncStatus(siteName, SyncInstanceStatus.Deployed);
 
@@ -457,7 +455,7 @@
                             var packageFile = Path.Combine(tempSitePath, siteName + ".zip");
 
                             // Create a package of the site and move it to local temp sites
-                            TraceHelper.TraceInformation("SyncService [IIS => Local Storage] - Creating a package of the site '{0}' and moving it to local temp sites '{1}'", siteName, packageFile);
+                            Trace.TraceInformation("SyncService [IIS => Local Storage] - Creating a package of the site '{0}' and moving it to local temp sites '{1}'", siteName, packageFile);
 
                             try
                             {

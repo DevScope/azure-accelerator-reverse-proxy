@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions
 {
     using System;
-    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Diagnostics;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Storage;
     using Microsoft.WindowsAzure.ServiceRuntime;

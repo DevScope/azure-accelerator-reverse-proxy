@@ -9,7 +9,6 @@
     using System.Linq;
     using System.Net;
     using System.Security.AccessControl;
-    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Diagnostics;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Services;
@@ -51,15 +50,10 @@
 
             ConfigureDiagnosticMonitor();
 
-            RoleEnvironment.Changing += this.RoleEnvironmentChanging;
-            RoleEnvironment.Changed += this.RoleEnvironmentChanged;
-
-            ConfigureTraceListener(RoleEnvironment.GetConfigurationSettingValue("TraceEventTypeFilter"));
-
             this.syncStatusRepository = new SyncStatusRepository();
             this.UpdateAllSitesSyncStatus(true);
             
-            TraceHelper.TraceInformation("WebRole.OnStart");
+            Trace.TraceInformation("WebRole.OnStart");
 
             return base.OnStart();
         }
@@ -68,7 +62,7 @@
         {
             try
             {
-                TraceHelper.TraceInformation("WebRole.Run");
+                Trace.TraceInformation("WebRole.Run");
 
                 // Initialize SyncService
                 var localSitesPath = GetLocalResourcePathAndSetAccess("Sites");
@@ -84,18 +78,17 @@
                 Environment.SetEnvironmentVariable("TEMP", localTempPath);
 
                 this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
-                this.syncService.Start();
                 this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
             }
             catch (Exception ex)
             {
-                TraceHelper.TraceError(ex.TraceInformation());
+                Trace.TraceError(ex.TraceInformation());
             }
         }
 
         public override void OnStop()
         {
-            TraceHelper.TraceInformation("WebRole.OnStop");
+            Trace.TraceInformation("WebRole.OnStop");
 
             this.UpdateAllSitesSyncStatus(false);
 
@@ -148,34 +141,6 @@
             Directory.SetAccessControl(resourcePath, localDataSec);
 
             return resourcePath;
-        }
-
-        private static void ConfigureTraceListener(string traceEventTypeFilter)
-        {
-            SourceLevels sourceLevels = SourceLevels.All;
-            if (Enum.TryParse<SourceLevels>(traceEventTypeFilter, true, out sourceLevels))
-            {
-                TraceHelper.Configure(sourceLevels);
-            }
-        }
-
-        private void RoleEnvironmentChanging(object sender, RoleEnvironmentChangingEventArgs e)
-        {
-            // for any configuration setting change except TraceEventTypeFilter
-            if (e.Changes.OfType<RoleEnvironmentConfigurationSettingChange>().Any(change => change.ConfigurationSettingName != "TraceEventTypeFilter"))
-            {
-                // Set e.Cancel to true to restart this role instance
-                e.Cancel = true;
-            }
-        }
-
-        private void RoleEnvironmentChanged(object sender, RoleEnvironmentChangedEventArgs e)
-        {
-            // configure trace listener for any changes to EnableTableStorageTraceListener 
-            if (e.Changes.OfType<RoleEnvironmentConfigurationSettingChange>().Any(change => change.ConfigurationSettingName == "TraceEventTypeFilter"))
-            {
-                ConfigureTraceListener(RoleEnvironment.GetConfigurationSettingValue("TraceEventTypeFilter"));               
-            }
         }
 
         private void UpdateAllSitesSyncStatus(bool isOnline)

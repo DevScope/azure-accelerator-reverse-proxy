@@ -2,8 +2,8 @@
 {
     using System;
     using System.IO;
-    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Diagnostics;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions;
+    using System.Diagnostics;
 
     public static class FilesHelper
     {
@@ -17,7 +17,7 @@
                 }
                 catch (Exception e)
                 {
-                    TraceHelper.TraceWarning("Remove Folder Error{0}{1}", Environment.NewLine, e.TraceInformation());
+                    Trace.TraceWarning("Remove Folder Error{0}{1}", Environment.NewLine, e.TraceInformation());
                 }
             }
         }
