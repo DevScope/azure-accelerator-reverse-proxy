@@ -16,7 +16,6 @@
         public static void Configure(SourceLevels sourceLevels)
         {
             Trace.Switch.Level = sourceLevels;
-            Trace.Listeners.Add(new AzureTableTraceListener { Filter = new EventTypeFilter(sourceLevels) });
         }
 
         public static void TraceVerbose(string format, params object[] args)

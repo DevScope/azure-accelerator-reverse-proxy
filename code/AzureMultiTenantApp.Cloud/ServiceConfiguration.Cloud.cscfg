@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="AzureMultiTenantApp.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="2" osVersion="*">
+  <Role name="AzureMultiTenantApp.Web">
+    <Instances count="2" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="DataConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="SitesContainerName" value="sites" />
+      <Setting name="DirectoriesToExclude" value="App_Data/TEMP;TEMP" />
+      <Setting name="SyncIntervalInSeconds" value="15" />
+      <Setting name="AdminUserName" value="admin" />
+      <Setting name="AdminUserPassword" value="Passw0rd!" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="admin" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEEF7rZmMJyaEREi+EJC4WpUwDQYJKoZIhvcNAQEBBQAEggEAQrruo8G67TRXvYsMWJQsLywZTz1X7KvEeyrCH2OtgmAzw/LoNrrD8xZMCuTcExlueCsiMjCn1utf3/Zvs+6CnyeZCpRfE3Px8giMEg2qDLJYY9Q85qnSYaU8Z1VEwZLtWH2FG9lgsXYaGyd2/GWeITCFOiPjBvRheB6dfG2LMXaj7gYe0MOinqqTpAbsdE1yRsU55iUmCpTbuGjXpQzUsOQtW5ZriQR3JfSEtXVWBhWnRVRVInCtxI/vlAHiLbtjwOiyCQOTlgjOvnz2ovb1Ykzi9dzrLGEMYTldeJffKD/OzJHdGBIkdjW/4BJORc7ZO4+7tLXqe7h9MBzaw2AEATAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECDHnafJ4LBBbgBBpTi79EDhW34Woo0JED7Xx" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2013-01-30T23:59:59.0000000-08:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="B6E8A99CB3B0174C053DAF5A48DACB504C5889EC" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

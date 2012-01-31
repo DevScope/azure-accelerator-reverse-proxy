@@ -11,17 +11,15 @@
     [Authorize]
     public class SyncController : Controller
     {
-        private readonly ILogRepository logRepository;
         private readonly ISyncStatusRepository syncStatusRepository;
 
         public SyncController()
-            : this(new LogRepository(), new SyncStatusRepository())
+            : this(new SyncStatusRepository())
         {
         }
 
-        public SyncController(ILogRepository logRepository, ISyncStatusRepository syncStatusRepository)
+        public SyncController(ISyncStatusRepository syncStatusRepository)
         {
-            this.logRepository = logRepository;
             this.syncStatusRepository = syncStatusRepository;
         }
 
@@ -45,45 +43,6 @@
             this.ViewBag.WebSiteName = webSiteName;
 
             return View(model);
-        }
-
-        public ActionResult Log(int? count, string level)
-        {
-            var take = count.HasValue ? count.Value : 100;
-            var currentLevel = level == null || level.Equals("All", StringComparison.OrdinalIgnoreCase) ? string.Empty : level;
-
-            var logMessages = this.logRepository.RetrieveLogMessages(take, currentLevel);
-            var model = logMessages.Select(l => new LogMessageModel
-            {
-                Level = l.Level,
-                LogTimestamp = l.LogTimestamp,
-                Message = l.Message,
-                RoleInstanceId = l.RoleInstanceId
-            });
-
-            var levels = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Error" },
-                new SelectListItem { Text = "Information" },
-                new SelectListItem { Text = "Warning" }
-            };
-
-            if (!string.IsNullOrWhiteSpace(currentLevel))
-            {
-                foreach (var l in levels)
-                {
-                    if (l.Text.Equals(currentLevel, StringComparison.OrdinalIgnoreCase))
-                    {
-                        l.Selected = true;
-                        break;
-                    }
-                }
-            }
-
-            ViewBag.Count = take;
-            ViewBag.Levels = levels;
-            
-            return View("Log", model);
         }
 
         public ActionResult SyncChange(bool enable)

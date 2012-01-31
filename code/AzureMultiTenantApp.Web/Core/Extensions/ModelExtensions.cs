@@ -106,22 +106,6 @@
             };
         }
 
-        public static LogMessage ToModel(this AzureLogMessage row)
-        {
-            if (row == null)
-            {
-                return null;
-            }
-
-            return new LogMessage()
-            {
-                RoleInstanceId = row.RoleInstanceId,
-                Level = row.Level,
-                LogTimestamp = row.LogTimestamp,
-                Message = row.Message
-            };
-        }
-
         public static SyncStatusRow ToRow(this SyncStatus model)
         {
             if (model == null)
