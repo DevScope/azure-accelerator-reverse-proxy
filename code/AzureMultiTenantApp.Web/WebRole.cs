@@ -20,21 +20,7 @@
 
     public class WebRole : RoleEntryPoint
     {
-        private static string wadConnectionString = "Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString";
-        private ISyncStatusRepository syncStatusRepository;
         private ISyncService syncService;
-
-        public static IEnumerable<string> ConfiguredCounters
-        {
-            get
-            {
-                yield return @"\Processor(_Total)\% Processor Time";
-                yield return @"\Memory\Available MBytes";
-                yield return @"\ASP.NET Applications(__Total__)\Requests Total";
-                yield return @"\ASP.NET Applications(__Total__)\Requests/Sec";
-                yield return @"\ASP.NET\Requests Queued";
-            }
-        }
 
         public override bool OnStart()
         {
@@ -50,39 +36,37 @@
 
             ConfigureDiagnosticMonitor();
 
-            this.syncStatusRepository = new SyncStatusRepository();
-            this.UpdateAllSitesSyncStatus(true);
-            
             Trace.TraceInformation("WebRole.OnStart");
+
+            // Initialize local resources
+            var localSitesPath = GetLocalResourcePathAndSetAccess("Sites");
+            var localTempPath = GetLocalResourcePathAndSetAccess("TempSites");
+
+            // Get settings
+            var directoriesToExclude = RoleEnvironment.GetConfigurationSettingValue("DirectoriesToExclude").Split(';');
+
+            // WebDeploy creates temporary files during package creation. The default TEMP location allows for a 100MB
+            // quota (see http://msdn.microsoft.com/en-us/library/gg465400.aspx#Y976). 
+            // For large web deploy packages, the synchronization process will raise an IO exception because the "disk is full" 
+            // unless you ensure that the TEMP/TMP target directory has sufficient space
+            Environment.SetEnvironmentVariable("TMP", localTempPath);
+            Environment.SetEnvironmentVariable("TEMP", localTempPath);
+
+            // Create the sync service and update the sites status
+            this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
+            this.syncService.Start();
 
             return base.OnStart();
         }
 
         public override void Run()
         {
-            try
+            Trace.TraceInformation("WebRole.Run");
+            var syncInterval = int.Parse(RoleEnvironment.GetConfigurationSettingValue("SyncIntervalInSeconds"), CultureInfo.InvariantCulture);
+            this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
+            while (true)
             {
-                Trace.TraceInformation("WebRole.Run");
-
-                // Initialize SyncService
-                var localSitesPath = GetLocalResourcePathAndSetAccess("Sites");
-                var localTempPath = GetLocalResourcePathAndSetAccess("TempSites");
-                var directoriesToExclude = RoleEnvironment.GetConfigurationSettingValue("DirectoriesToExclude").Split(';');
-                var syncInterval = int.Parse(RoleEnvironment.GetConfigurationSettingValue("SyncIntervalInSeconds"), CultureInfo.InvariantCulture);
-
-                // WebDeploy creates temporary files during package creation. The default TEMP location allows for a 100MB
-                // quota (see http://msdn.microsoft.com/en-us/library/gg465400.aspx#Y976). 
-                // For large web deploy packages, the synchronization process will raise an IO exception because the "disk is full" 
-                // unless you ensure that the TEMP/TMP target directory has sufficient space
-                Environment.SetEnvironmentVariable("TMP", localTempPath);
-                Environment.SetEnvironmentVariable("TEMP", localTempPath);
-
-                this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
-                this.syncService.SyncForever(TimeSpan.FromSeconds(syncInterval));
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.TraceInformation());
+                System.Threading.Thread.Sleep(10000);
             }
         }
 
@@ -90,46 +74,66 @@
         {
             Trace.TraceInformation("WebRole.OnStop");
 
-            this.UpdateAllSitesSyncStatus(false);
+            // Set the sites as not synced for this instance
+            var roleInstanceId = RoleEnvironment.IsAvailable ? RoleEnvironment.CurrentRoleInstance.Id : Environment.MachineName;
+            this.syncService.UpdateAllSitesSyncStatus(roleInstanceId, false);
 
             base.OnStop();
         }
 
         private static void ConfigureDiagnosticMonitor()
         {
-            var storageAccount = CloudStorageAccount.FromConfigurationSetting(wadConnectionString);
-            var roleInstanceDiagnosticManager = storageAccount.CreateRoleInstanceDiagnosticManager(RoleEnvironment.DeploymentId, RoleEnvironment.CurrentRoleInstance.Role.Name, RoleEnvironment.CurrentRoleInstance.Id);
-            var diagnosticMonitorConfiguration = roleInstanceDiagnosticManager.GetCurrentConfiguration();
-            if (diagnosticMonitorConfiguration == null)
-            {
-                diagnosticMonitorConfiguration = DiagnosticMonitor.GetDefaultInitialConfiguration();
-            }
+            var transferPeriod = TimeSpan.FromMinutes(5);
+            var bufferQuotaInMB = 100;
+
+            // Add Windows Azure Trace Listener
+            System.Diagnostics.Trace.Listeners.Add(new Microsoft.WindowsAzure.Diagnostics.DiagnosticMonitorTraceListener());
+
+            // Enable Collection of Crash Dumps
+            CrashDumps.EnableCollection(true);
+
+            // Get the Default Initial Config
+            var config = DiagnosticMonitor.GetDefaultInitialConfiguration();
+
+            // Windows Azure Logs
+            config.Logs.ScheduledTransferPeriod = transferPeriod;
+            config.Logs.BufferQuotaInMB = bufferQuotaInMB;
+            config.Logs.ScheduledTransferLogLevelFilter = LogLevel.Information;
 
             // File-based logs
-            diagnosticMonitorConfiguration.Directories.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
-            diagnosticMonitorConfiguration.Directories.BufferQuotaInMB = 100;
+            config.Directories.ScheduledTransferPeriod = transferPeriod;
+            config.Directories.BufferQuotaInMB = bufferQuotaInMB;
+
+            config.DiagnosticInfrastructureLogs.ScheduledTransferPeriod = transferPeriod;
+            config.DiagnosticInfrastructureLogs.BufferQuotaInMB = bufferQuotaInMB;
+            config.DiagnosticInfrastructureLogs.ScheduledTransferLogLevelFilter = LogLevel.Warning;
 
             // Windows Event logs
-            diagnosticMonitorConfiguration.WindowsEventLog.DataSources.Add("Application!*");
-            diagnosticMonitorConfiguration.WindowsEventLog.DataSources.Add("System!*");
-            diagnosticMonitorConfiguration.WindowsEventLog.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
+            config.WindowsEventLog.DataSources.Add("Application!*");
+            config.WindowsEventLog.DataSources.Add("System!*");
+            config.WindowsEventLog.ScheduledTransferPeriod = transferPeriod;
+            config.WindowsEventLog.ScheduledTransferLogLevelFilter = LogLevel.Information;
+            config.WindowsEventLog.BufferQuotaInMB = bufferQuotaInMB;
 
             // Performance Counters
-            ConfiguredCounters.ToList().ForEach(
+            var counters = new List<string> {
+                @"\Processor(_Total)\% Processor Time",
+                @"\Memory\Available MBytes",
+                @"\ASP.NET Applications(__Total__)\Requests Total",
+                @"\ASP.NET Applications(__Total__)\Requests/Sec",
+                @"\ASP.NET\Requests Queued",
+            };
+
+            counters.ForEach(
                 counter =>
                 {
-                    var counterConfiguration = new PerformanceCounterConfiguration
-                    { 
-                        CounterSpecifier = counter,
-                        SampleRate = TimeSpan.FromSeconds(30)
-                    };
-
-                    diagnosticMonitorConfiguration.PerformanceCounters.DataSources.Add(counterConfiguration);
+                    config.PerformanceCounters.DataSources.Add(
+                        new PerformanceCounterConfiguration { CounterSpecifier = counter, SampleRate = TimeSpan.FromSeconds(60) });
                 });
-            
-            diagnosticMonitorConfiguration.PerformanceCounters.ScheduledTransferPeriod = TimeSpan.FromMinutes(1);
+            config.PerformanceCounters.ScheduledTransferPeriod = transferPeriod;
+            config.PerformanceCounters.BufferQuotaInMB = bufferQuotaInMB;
 
-            roleInstanceDiagnosticManager.SetCurrentConfiguration(diagnosticMonitorConfiguration);
+            DiagnosticMonitor.Start("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString", config);
         }
 
         private static string GetLocalResourcePathAndSetAccess(string localResourceName)
@@ -141,30 +145,6 @@
             Directory.SetAccessControl(resourcePath, localDataSec);
 
             return resourcePath;
-        }
-
-        private void UpdateAllSitesSyncStatus(bool isOnline)
-        {
-            if (this.syncStatusRepository == null)
-            {
-                return;
-            }
-
-            var roleInstanceId = RoleEnvironment.IsAvailable ? RoleEnvironment.CurrentRoleInstance.Id : Environment.MachineName;
-            SyncStatus newSyncStatus;
-
-            foreach (var syncStatus in this.syncStatusRepository.RetrieveSyncStatusByInstanceId(roleInstanceId))
-            {
-                newSyncStatus = new SyncStatus
-                {
-                    SiteName = syncStatus.SiteName,
-                    RoleInstanceId = roleInstanceId,
-                    Status = syncStatus.Status,
-                    IsOnline = isOnline
-                };
-
-                this.syncStatusRepository.UpdateStatus(newSyncStatus);
-            } 
         }
     }
 }

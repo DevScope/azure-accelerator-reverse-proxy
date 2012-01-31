@@ -64,14 +64,35 @@
             this.container.CreateIfNotExist();
         }
 
+        public void UpdateAllSitesSyncStatus(string roleInstanceId, bool isOnline)
+        {
+            
+            SyncStatus newSyncStatus;
+
+            foreach (var syncStatus in this.syncStatusRepository.RetrieveSyncStatusByInstanceId(roleInstanceId))
+            {
+                newSyncStatus = new SyncStatus
+                {
+                    SiteName = syncStatus.SiteName,
+                    RoleInstanceId = roleInstanceId,
+                    Status = syncStatus.Status,
+                    IsOnline = isOnline
+                };
+
+                this.syncStatusRepository.UpdateStatus(newSyncStatus);
+            }
+        }
+
+        public void Start()
+        {
+            // Always sync once in case the role has been reimaged.
+            SyncOnce();
+        }
+
         public void SyncForever(TimeSpan interval)
         {
             var blobStop = this.container.GetBlobReference(BlobStopName);
             var lastHeartbeat = DateTime.MinValue;
-
-            // Always sync once in case the role has been reimaged.
-            SyncOnce();
-            Thread.Sleep(interval);
 
             while (true)
             {
