@@ -34,13 +34,13 @@
 
         public void UpdateSites(IEnumerable<WebSite> sites)
         {
-            TraceHelper.TraceVerbose("IISManager.Sites list from table: {0}", string.Join(",", sites.Select(s => s.Name)));
+            Trace.TraceInformation("IISManager.Sites list from table: {0}", string.Join(",", sites.Select(s => s.Name)));
 
             using (var serverManager = new ServerManager())
             {
                 var iisSites = serverManager.Sites;
 
-                TraceHelper.TraceVerbose("IISManager.Sites list from IIS: {0}", string.Join(",", iisSites.Select(s => s.Name)));
+                Trace.TraceInformation("IISManager.Sites list from IIS: {0}", string.Join(",", iisSites.Select(s => s.Name)));
 
                 // Find sites that need to be removed
                 foreach (var iisSite in iisSites.ToArray())
@@ -52,7 +52,7 @@
                         !sites.Select(s => s.Name.ToLowerInvariant()).Contains(name))
                     {
                         // Remove site
-                        TraceHelper.TraceInformation("IISManager.Removing site '{0}'", iisSite.Name);
+                        Trace.TraceInformation("IISManager.Removing site '{0}'", iisSite.Name);
 
                         serverManager.Sites.Remove(iisSite);
 
@@ -70,14 +70,14 @@
                         }
                         catch (Exception e)
                         {
-                            TraceHelper.TraceWarning("IISManager.Remove Site Path Error{0}{1}", Environment.NewLine, e.TraceInformation());
+                            Trace.TraceWarning("IISManager.Remove Site Path Error{0}{1}", Environment.NewLine, e.TraceInformation());
                         }
 
                         // Remove appPool
                         var appPool = serverManager.ApplicationPools.SingleOrDefault(ap => ap.Name.Equals(iisSite.Name, StringComparison.OrdinalIgnoreCase));
                         if (appPool != null)
                         {
-                            TraceHelper.TraceInformation("IISManager.Removing appPool '{0}'", appPool.Name);
+                            Trace.TraceInformation("IISManager.Removing appPool '{0}'", appPool.Name);
 
                             serverManager.ApplicationPools.Remove(appPool);
                         }
@@ -90,7 +90,7 @@
                 }
                 catch (Exception e)
                 {
-                    TraceHelper.TraceError("IISManager.CommitChanges (Cleanup IIS){0}{1}", Environment.NewLine, e.TraceInformation());
+                    Trace.TraceError("IISManager.CommitChanges (Cleanup IIS){0}{1}", Environment.NewLine, e.TraceInformation());
                 }
             }
 
@@ -114,32 +114,32 @@
                             Directory.CreateDirectory(sitePath);
                         }
 
-                        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.LandingPage.html"))
-                        {
-                            var fileContent = new StreamReader(stream).ReadToEnd().Replace("{WebSiteName}", siteName);
-                            File.WriteAllText(Path.Combine(sitePath, "index.html"), fileContent);
-                        }
+                        //using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.LandingPage.html"))
+                        //{
+                        //    var fileContent = new StreamReader(stream).ReadToEnd().Replace("{WebSiteName}", siteName);
+                        //    File.WriteAllText(Path.Combine(sitePath, "index.html"), fileContent);
+                        //}
 
-                        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.LandingStyle.css"))
-                        {
-                            var fileContent = new StreamReader(stream).ReadToEnd();
-                            File.WriteAllText(Path.Combine(sitePath, "Site.css"), fileContent);
-                        }
+                        //using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.LandingStyle.css"))
+                        //{
+                        //    var fileContent = new StreamReader(stream).ReadToEnd();
+                        //    File.WriteAllText(Path.Combine(sitePath, "Site.css"), fileContent);
+                        //}
 
-                        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.PublishImage.png"))
-                        {
-                            var bitmap = new Bitmap(stream);
-                            bitmap.Save(Path.Combine(sitePath, "publish.png"));
-                        }
+                        //using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.PublishImage.png"))
+                        //{
+                        //    var bitmap = new Bitmap(stream);
+                        //    bitmap.Save(Path.Combine(sitePath, "publish.png"));
+                        //}
 
-                        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.SolutionImage.png"))
-                        {
-                            var bitmap = new Bitmap(stream);
-                            bitmap.Save(Path.Combine(sitePath, "solution.png"));
-                        }
+                        //using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Resources.SolutionImage.png"))
+                        //{
+                        //    var bitmap = new Bitmap(stream);
+                        //    bitmap.Save(Path.Combine(sitePath, "solution.png"));
+                        //}
 
                         // Add web site
-                        TraceHelper.TraceInformation("IISManager.Adding site '{0}'", siteName);
+                        Trace.TraceInformation("IISManager.Adding site '{0}'", siteName);
 
                         var defaultBinding = site.Bindings.First();
                         var bindingInformation = GetBindingInformation(defaultBinding.IpAddress, defaultBinding.Port, defaultBinding.HostName);
@@ -153,7 +153,7 @@
 
                         if (cert != null)
                         {
-                            TraceHelper.TraceInformation("IISManager.Adding WebSite '{0}' with Binding Information '{1}' and Certificate '{2}'", site.Name, bindingInformation, cert.Thumbprint);
+                            Trace.TraceInformation("IISManager.Adding WebSite '{0}' with Binding Information '{1}' and Certificate '{2}'", site.Name, bindingInformation, cert.Thumbprint);
 
                             iisSite = serverManager.Sites.Add(
                                 siteName,
@@ -163,7 +163,7 @@
                         }
                         else
                         {
-                            TraceHelper.TraceInformation("IISManager.Adding WebSite '{0}' with Binding Information '{1}'", site.Name, bindingInformation);
+                            Trace.TraceInformation("IISManager.Adding WebSite '{0}' with Binding Information '{1}'", site.Name, bindingInformation);
 
                             iisSite = serverManager.Sites.Add(
                                 siteName,
@@ -176,7 +176,7 @@
                         var appPool = serverManager.ApplicationPools.SingleOrDefault(ap => ap.Name.Equals(siteName, StringComparison.OrdinalIgnoreCase));
                         if (appPool == null)
                         {
-                            TraceHelper.TraceInformation("IISManager.Adding AppPool '{0}' for site '{0}'", siteName);
+                            Trace.TraceInformation("IISManager.Adding AppPool '{0}' for site '{0}'", siteName);
 
                             appPool = serverManager.ApplicationPools.Add(siteName);
                             appPool.ManagedRuntimeVersion = "v4.0";
@@ -203,7 +203,7 @@
                     {
                         if (!site.Bindings.Any(b => AreEqualsBindings(binding, b)))
                         {
-                            TraceHelper.TraceInformation("IISManager.Removing binding with protocol: '{0}'", binding.Protocol);
+                            Trace.TraceInformation("IISManager.Removing binding with protocol: '{0}'", binding.Protocol);
                             iisSite.Bindings.Remove(binding);
                         }
                     }
@@ -225,12 +225,12 @@
 
                             if (cert != null)
                             {
-                                TraceHelper.TraceInformation("IISManager.Adding Binding '{0}' for WebSite '{1}' with Binding Information '{2}' and Certificate '{3}'", binding.Id, site.Name, bindingInformation, cert.Thumbprint);
+                                Trace.TraceInformation("IISManager.Adding Binding '{0}' for WebSite '{1}' with Binding Information '{2}' and Certificate '{3}'", binding.Id, site.Name, bindingInformation, cert.Thumbprint);
                                 iisSite.Bindings.Add(bindingInformation, cert.GetCertHash(), StoreName.My.ToString());
                             }
                             else
                             {
-                                TraceHelper.TraceInformation("IISManager.Adding Binding '{0}' for WebSite '{1}' with Binding Information '{2}'", binding.Id, site.Name, bindingInformation);
+                                Trace.TraceInformation("IISManager.Adding Binding '{0}' for WebSite '{1}' with Binding Information '{2}'", binding.Id, site.Name, bindingInformation);
                                 iisSite.Bindings.Add(bindingInformation, binding.Protocol);
                             }
                         }
@@ -238,13 +238,13 @@
 
                     try
                     {
-                        TraceHelper.TraceVerbose("IISManager.Committing Changes for site '{0}'", site.Name);
+                        Trace.TraceInformation("IISManager.Committing Changes for site '{0}'", site.Name);
                         serverManager.CommitChanges();
                     }
                     catch (Exception e)
                     {
                         this.UpdateSyncStatus(siteName, SyncInstanceStatus.Error);
-                        TraceHelper.TraceError("IISManager.CommitChanges for site '{0}'{1}{2}", site.Name, Environment.NewLine, e.TraceInformation());
+                        Trace.TraceError("IISManager.CommitChanges for site '{0}'{1}{2}", site.Name, Environment.NewLine, e.TraceInformation());
                     }
                 }
             }
@@ -264,7 +264,7 @@
             {
                 if (testApplication == null)
                 {
-                    TraceHelper.TraceInformation("IISManager.Adding Test application for site '{0}'", siteName);
+                    Trace.TraceInformation("IISManager.Adding Test application for site '{0}'", siteName);
                     testApplication = adminSite.Applications.Add("/test/" + siteName, sitePath);
                     testApplication.ApplicationPoolName = appPool.Name;
                 }
@@ -273,7 +273,7 @@
             {
                 if (testApplication != null)
                 {
-                    TraceHelper.TraceInformation("IISManager.Removing Test application for site '{0}'", siteName);
+                    Trace.TraceInformation("IISManager.Removing Test application for site '{0}'", siteName);
                     adminSite.Applications.Remove(testApplication);
                 }
             }
@@ -282,7 +282,7 @@
             {
                 if (cdnApplication == null)
                 {
-                    TraceHelper.TraceInformation("IISManager.Adding CDN application for site '{0}'", siteName);
+                    Trace.TraceInformation("IISManager.Adding CDN application for site '{0}'", siteName);
                     cdnApplication = adminSite.Applications.Add("/cdn/" + siteName, Path.Combine(sitePath, "cdn"));
                     cdnApplication.ApplicationPoolName = appPool.Name;
                 }
@@ -291,7 +291,7 @@
             {
                 if (cdnApplication != null)
                 {
-                    TraceHelper.TraceInformation("IISManager.Removing CDN application for site '{0}'", siteName);
+                    Trace.TraceInformation("IISManager.Removing CDN application for site '{0}'", siteName);
                     adminSite.Applications.Remove(cdnApplication);
                 }
             }
@@ -318,7 +318,7 @@
             catch
             {
                 // Ignore if invalid
-                TraceHelper.TraceWarning("IISManager.Invalid Certificate for site '{0}'", siteName);
+                Trace.TraceWarning("IISManager.Invalid Certificate for site '{0}'", siteName);
             }
 
             return null;
@@ -344,7 +344,7 @@
                                              app.Path.EndsWith("/cdn/" + siteName, StringComparison.OrdinalIgnoreCase)
                                              select app;
 
-            TraceHelper.TraceInformation("IISManager.Removing Test and CDN applications for site '{0}'", siteName);
+            Trace.TraceInformation("IISManager.Removing Test and CDN applications for site '{0}'", siteName);
 
             foreach (var app in applicationsToRemove.ToArray())
             {

@@ -76,52 +76,6 @@
             };
         }
 
-        public static Certificate ToModel(this CertificateRow row)
-        {
-            if (row == null)
-            {
-                return null;
-            }
-
-            return new Certificate(new Guid(row.RowKey))
-            {
-                Name = row.Name,
-                Description = row.Description,
-                Password = row.Password
-            };
-        }
-
-        public static CertificateRow ToRow(this Certificate model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-
-            return new CertificateRow(model.Id)
-            {
-                Name = model.Name,
-                Description = model.Description,
-                Password = model.Password
-            };
-        }
-
-        public static LogMessage ToModel(this AzureLogMessage row)
-        {
-            if (row == null)
-            {
-                return null;
-            }
-
-            return new LogMessage()
-            {
-                RoleInstanceId = row.RoleInstanceId,
-                Level = row.Level,
-                LogTimestamp = row.LogTimestamp,
-                Message = row.Message
-            };
-        }
-
         public static SyncStatusRow ToRow(this SyncStatus model)
         {
             if (model == null)

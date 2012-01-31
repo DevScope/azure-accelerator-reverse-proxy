@@ -15,6 +15,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\code\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,9 +50,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.WindowsAzure.Diagnostics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.WindowsAzure.Diagnostics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.WindowsAzure.StorageClient, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -92,24 +94,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\SyncController.cs" />
     <Compile Include="Controllers\WebSiteController.cs" />
-    <Compile Include="Core\Diagnostics\AzureLogMessage.cs" />
-    <Compile Include="Core\Diagnostics\AzureTableTraceListener.cs" />
-    <Compile Include="Core\Diagnostics\SimplifiedTraceListener.cs" />
+    <Compile Include="Core\Diagnostics\DiagnosticHelper.cs" />
     <Compile Include="Core\Entities\Binding.cs" />
     <Compile Include="Core\Entities\Certificate.cs" />
     <Compile Include="Core\Entities\Enums.cs" />
     <Compile Include="Core\Entities\FileEntry.cs" />
-    <Compile Include="Core\Entities\LogMessage.cs" />
     <Compile Include="Core\Entities\SyncStatus.cs" />
     <Compile Include="Core\Entities\WebSite.cs" />
     <Compile Include="Core\Extensions\BlobExtensions.cs" />
     <Compile Include="Core\Extensions\ExceptionExtensions.cs" />
     <Compile Include="Core\Extensions\ModelExtensions.cs" />
     <Compile Include="Core\Extensions\TableStorageExtensionMethods.cs" />
-    <Compile Include="Core\Diagnostics\TraceHelper.cs" />
     <Compile Include="Core\Helpers\FilesHelper.cs" />
     <Compile Include="Core\Services\IIISManager.cs" />
     <Compile Include="Core\Services\IISManager.cs" />
@@ -118,16 +115,11 @@
     <Compile Include="Core\Storage\AzureBlobContainer.cs" />
     <Compile Include="Core\Storage\AzureTable.cs" />
     <Compile Include="Core\Storage\BindingRow.cs" />
-    <Compile Include="Core\Storage\CertificateRepository.cs" />
-    <Compile Include="Core\Storage\CertificateRow.cs" />
     <Compile Include="Core\Storage\SyncStatusRepository.cs" />
     <Compile Include="Core\Storage\IAzureBlobContainer.cs" />
     <Compile Include="Core\Storage\IAzureTable.cs" />
-    <Compile Include="Core\Storage\ICertificateRepository.cs" />
-    <Compile Include="Core\Storage\ILogRepository.cs" />
     <Compile Include="Core\Storage\ISyncStatusRepository.cs" />
     <Compile Include="Core\Storage\IWebSiteRepository.cs" />
-    <Compile Include="Core\Storage\LogRepository.cs" />
     <Compile Include="Core\Storage\SyncStatusRow.cs" />
     <Compile Include="Core\Storage\WebSiteRow.cs" />
     <Compile Include="Core\Storage\WebSiteRepository.cs" />
@@ -137,7 +129,6 @@
     </Compile>
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\CertificateModels.cs" />
     <Compile Include="Models\SyncModels.cs" />
     <Compile Include="Models\WebSiteModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -151,26 +142,37 @@
     <Content Include="Content\Save.png" />
     <Content Include="Content\ui-icons_2e83ff_256x240.png" />
     <Content Include="Global.asax" />
+    <None Include="_bin_deployableAssemblies\Microsoft.Web.Infrastructure.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.WebPages.Razor.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.WebPages.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.WebPages.Deployment.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.Razor.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.Helpers.dll" />
+    <None Include="_bin_deployableAssemblies\System.Web.Mvc.dll" />
     <EmbeddedResource Include="Resources\LandingPage.html" />
     <EmbeddedResource Include="Resources\LandingStyle.css" />
     <EmbeddedResource Include="Resources\PublishImage.png" />
     <EmbeddedResource Include="Resources\SolutionImage.png" />
-    <Content Include="Scripts\jquery-1.5.1.min.js" />
+    <Content Include="Scripts\jquery-1.7.1-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.7.1.js" />
+    <Content Include="Scripts\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\modernizr-1.7.min.js" />
-    <Content Include="Startup\Microsoft.Web.Deployment.dll">
+    <None Include="Startup\Microsoft.Web.Deployment.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Startup\Microsoft.Web.PlatformInstaller.dll">
+    </None>
+    <None Include="Startup\Microsoft.Web.PlatformInstaller.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Startup\Microsoft.Web.PlatformInstaller.UI.dll">
+    </None>
+    <None Include="Startup\Microsoft.Web.PlatformInstaller.UI.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Startup\WebpiCmdLine.exe">
+    </None>
+    <None Include="Startup\WebpiCmdLine.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Views\Shared\DisplayTemplates\HelpMessage.ascx" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -191,23 +193,24 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Views\WebSite\Edit.cshtml" />
+    <Content Include="Views\WebSite\Create.cshtml" />
+    <Content Include="Views\WebSite\EditBinding.cshtml" />
+    <Content Include="Views\WebSite\List.cshtml" />
+    <Content Include="Views\WebSite\CreateBinding.cshtml" />
+    <Content Include="Views\Sync\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Startup\ConfigureIIS.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Startup\EnableRemoteManagement.reg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Views\WebSite\Edit.cshtml" />
-    <Content Include="Views\WebSite\Create.cshtml" />
-    <Content Include="Views\WebSite\EditBinding.cshtml" />
-    <Content Include="Views\Certificate\Create.cshtml" />
-    <Content Include="Views\Certificate\Details.cshtml" />
-    <Content Include="Views\Certificate\List.cshtml" />
-    <Content Include="Views\WebSite\List.cshtml" />
-    <Content Include="Views\WebSite\CreateBinding.cshtml" />
-    <Content Include="Views\Sync\Log.cshtml" />
-    <Content Include="Views\Sync\Index.cshtml" />
-    <None Include="Startup\license.rtf" />
+    <None Include="Startup\license.rtf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
@@ -239,4 +242,5 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

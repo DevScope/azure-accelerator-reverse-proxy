@@ -115,21 +115,6 @@
             return website;
         }
 
-        public WebSite RetrieveWebSiteWithBindingsAndCertificates(Guid webSiteId, ICertificateRepository certificateRepository)
-        {
-            WebSite website = this.RetrieveWebSiteWithBindings(webSiteId);
-
-            if (website.Bindings != null) 
-            {
-                foreach (var binding in website.Bindings)
-                {
-                    certificateRepository.RetrieveCertificateForBinding(binding);
-                }
-            }
-
-            return website;
-        }
-
         public IEnumerable<Binding> RetrieveWebSiteBindings(Guid webSiteId)
         {
             return this.bindingTable.Query.Where(b => b.WebSiteId == webSiteId).ToList().Select(b => b.ToModel()).ToList();
@@ -177,23 +162,6 @@
             foreach (var site in sites)
             {
                 site.Bindings = this.RetrieveWebSiteBindings(site.Id);
-            }
-
-            return sites;
-        }
-
-        public IEnumerable<WebSite> RetrieveWebSitesWithBindingsAndCertificates(ICertificateRepository certificateRepository)
-        {
-            var sites = this.RetrieveWebSites();
-
-            foreach (var site in sites)
-            {
-                site.Bindings = this.RetrieveWebSiteBindings(site.Id);
-
-                foreach (var binding in site.Bindings)
-                {
-                    certificateRepository.RetrieveCertificateForBinding(binding);
-                }
             }
 
             return sites;

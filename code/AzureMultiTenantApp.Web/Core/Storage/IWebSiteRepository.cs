@@ -28,11 +28,7 @@
 
         WebSite RetrieveWebSiteWithBindings(Guid webSiteId);
 
-        WebSite RetrieveWebSiteWithBindingsAndCertificates(Guid webSiteId, ICertificateRepository certificateRepository);
-
         IEnumerable<Binding> RetrieveWebSiteBindings(Guid webSiteId);
-
-        IEnumerable<Binding> RetrieveCertificateBindings(Guid certificateId);
 
         IEnumerable<Binding> RetrieveBindingsForPort(int port);
 
@@ -42,6 +38,5 @@
 
         IEnumerable<WebSite> RetrieveWebSitesWithBindings();
 
-        IEnumerable<WebSite> RetrieveWebSitesWithBindingsAndCertificates(ICertificateRepository certificateRepository);
     }
 }
