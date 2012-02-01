@@ -6,20 +6,26 @@
 <h2>
     Web Sites</h2>
 <p>
-    @Html.ActionLink("new web site", "Create")
+    @Html.ActionLink("new web site", "Create") | @Html.ActionLink((ViewBag.IsSyncEnabled ? "disable sync" : "enable sync"), "SyncChange", "Sync", new { enable = !ViewBag.IsSyncEnabled }, new { })
 </p>
-
 @if (this.Model != null && this.Model.Count() > 0)
 {
     <table>
         <tr>
-            <th>IIS Site Name</th>
-            <th>Description</th>
-            <th>Preview</th>
-            <th></th>
+            <th>
+                IIS Site Name
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Preview
+            </th>
+            <th>
+            </th>
         </tr>
         @{
-        var i = 0;
+    var i = 0;
         }
         @foreach (var item in this.Model)
         {
@@ -34,7 +40,6 @@
                 </td>
                 <td class="left-aligned" style="font-size: 13px">
                     Site: <a href='@item.Url'>@item.Url</a><br />
-
                     @if (item.TestUrl != null)
                     {
                         <span>Test site: <a href='@item.TestUrl'>@item.TestUrl</a></span>
@@ -45,9 +50,11 @@
                     }
                 </td>
                 <td>
-                    <a href="/WebSite/Edit/@item.Id" title="Edit"><span class="ui-icon ui-icon-pencil" style="float:left; margin-left:10px;" /></a>
-                    <a class="button-delete" href="/WebSite/Delete/@item.Id" title="Delete"><span class="ui-icon ui-icon-trash" style="float:left; margin-left:10px;" /></a>
-                    <a href="/Sync?webSiteName=@item.Name" title="Status"><span class="ui-icon ui-icon-info" style="float:left; margin-left:10px;" /></a>
+                    <a href="/WebSite/Edit/@item.Id" title="Edit"><span class="ui-icon ui-icon-pencil"
+                        style="float: left; margin-left: 10px;" /></a><a class="button-delete" href="/WebSite/Delete/@item.Id" title="Delete">
+                            <span class="ui-icon ui-icon-trash" style="float: left; margin-left: 10px;" />
+                    </a><a href="/Sync?webSiteName=@item.Name" title="Status"><span class="ui-icon ui-icon-info"
+                        style="float: left; margin-left: 10px;" /></a>
                 </td>
             </tr>
         }
@@ -56,10 +63,13 @@
 else
 {
     <div class="note">
-        There are no web sites configured. Use the @Html.ActionLink("new web site", "Create") page to add a new web site to your Windows Azure Accelerator for Web Roles.
+        There are no web sites configured. Use the @Html.ActionLink("new web site", "Create")
+        page to add a new web site to your Windows Azure Accelerator for Web Roles.
     </div>
 }
-
+<footer>
+    @Html.Raw((!ViewBag.IsSyncEnabled ? "<br><div style='color:Red; font-weight:bold'>Synchronization is disabled. Enable Sync to resume site synchronization between role instances.</div>" : string.Empty))
+</footer>
 <script type="text/javascript">
     jQuery(document).ready(function () {
         $(function () {

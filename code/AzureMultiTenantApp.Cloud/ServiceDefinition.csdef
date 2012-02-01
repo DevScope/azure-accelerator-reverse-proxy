@@ -26,6 +26,7 @@
     <LocalResources>
       <LocalStorage name="Sites" cleanOnRoleRecycle="true" sizeInMB="5000" />
       <LocalStorage name="TempSites" cleanOnRoleRecycle="true" sizeInMB="5000" />
+      <LocalStorage name="Config" cleanOnRoleRecycle="true" sizeInMB="10" />
     </LocalResources>
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />

@@ -1,55 +1,46 @@
 ﻿@using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Extensions
-
 @model Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Models.BindingModel
-
 @{
-	ViewBag.Title = "EditBinding";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "EditBinding";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h2>Edit Binding</h2>
+<h2>
+    Edit Binding</h2>
 <p>
-	@Html.ActionLink("back to web sites list", "Index")
+    @Html.ActionLink("back to web sites list", "Index")
 </p>
-
 <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-
-@using (Html.BeginForm()) {
-	@Html.ValidationSummary(true)
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
 	
-	<fieldset>
-		<legend></legend>
-
-		@Html.HiddenFor(model => model.Id)
-
-		<div class="editor-label">
-			@Html.LabelFor(model => model.WebSiteName)
-		</div>
-		<div class="editor-field">
-			@this.Model.WebSiteName
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(model => model.Protocol)
-		</div>
-		<div class="editor-field">
-			@Html.DropDownListFor(model => model.Protocol, new SelectList(
-							new string[] { "http", "https" }))
-							@*new string[] { "http", "https", "net.tcp", "net.pipe", "net.msmq", "msmq.formatname" }))*@
-
-			@Html.ValidationMessageFor(model => model.Protocol)
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(model => model.Port)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(model => model.Port)
-			@Html.ValidationMessageFor(model => model.Port)
-		</div>
-
-@*        <div class="editor-label">
+    <fieldset>
+        <legend></legend>
+        @Html.HiddenFor(model => model.Id)
+        <div class="editor-label">
+            @Html.LabelFor(model => model.WebSiteName)
+        </div>
+        <div class="editor-field">
+            @this.Model.WebSiteName
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Protocol)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.Protocol, new SelectList(
+                            new string[] { "http", "https" }))
+            @*new string[] { "http", "https", "net.tcp", "net.pipe", "net.msmq", "msmq.formatname" }))*@
+            @Html.ValidationMessageFor(model => model.Protocol)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Port)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Port)
+            @Html.ValidationMessageFor(model => model.Port)
+        </div>
+        @*        <div class="editor-label">
 			@Html.LabelFor(model => model.IpAddress)
 		</div>
 		<div class="editor-field">
@@ -57,65 +48,62 @@
 			@Html.ValidationMessageFor(model => model.IpAddress)
 		</div>
 *@
-		<div class="editor-label">
-			@Html.LabelFor(model => model.HostName)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(model => model.HostName)
-			@Html.ValidationMessageFor(model => model.HostName)
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(model => model.CertificateThumbprint)
-		</div>
-		<div class="editor-field">
-			@Html.DropDownListFor(model => model.CertificateThumbprint, this.Model.Certificates, "Not Selected")
-			@Html.DisplayHelpFor(model => model.CertificateThumbprint, "HelpMessage")
-			@Html.ValidationMessageFor(model => model.CertificateThumbprint)
-		</div>
-
-		<p>
-			<input type="image" value="Save" src="@Url.Content("~/Content/Save.png")" />
-		</p>
-	</fieldset>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.HostName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.HostName)
+            @Html.ValidationMessageFor(model => model.HostName)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CertificateThumbprint)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.CertificateThumbprint, this.Model.Certificates, "Not Selected")
+            @Html.DisplayHelpFor(model => model.CertificateThumbprint, "HelpMessage")
+            @Html.ValidationMessageFor(model => model.CertificateThumbprint)
+        </div>
+        <p>
+            <input type="image" value="Save" src="@Url.Content("~/Content/Save.png")" />
+        </p>
+    </fieldset>
 }
-
 <script type="text/javascript">
-	jQuery(document).ready(function () {
+    jQuery(document).ready(function () {
 
-		$("#Protocol").change(function () {
-			var protocol = $.trim($("#Protocol").val()).toLowerCase();
+        $("#Protocol").change(function () {
+            var protocol = $.trim($("#Protocol").val()).toLowerCase();
 
-			switch (protocol) {
-				case "http":
-					enableHttp();
-					break;
-				case "https":
-					enableHttps();
-					break;
-				default:
-					enableOther();
-			}
-		});
+            switch (protocol) {
+                case "http":
+                    enableHttp();
+                    break;
+                case "https":
+                    enableHttps();
+                    break;
+                default:
+                    enableOther();
+            }
+        });
 
-		$("#Protocol").change();
-	});
+        $("#Protocol").change();
+    });
 
-	function enableHttp() {
-		$("#CertificateId").val("");
-		$("#Port").val("80");
-		$("#CertificateId").attr("disabled", "disabled");
-	}
+    function enableHttp() {
+        $("#CertificateId").val("");
+        $("#Port").val("80");
+        $("#CertificateId").attr("disabled", "disabled");
+    }
 
-	function enableHttps() {
-		$("#Port").val("443");
-		$("#CertificateId").attr("disabled", "");
-	}
+    function enableHttps() {
+        $("#Port").val("443");
+        $("#CertificateId").attr("disabled", "");
+    }
 
-	function enableOther() {
-		$("#CertificateId").val("");
-		$("#HostName").val("");
-		$("#Port").val("");
-		$("#CertificateId").attr("disabled", "disabled");
-	}
+    function enableOther() {
+        $("#CertificateId").val("");
+        $("#HostName").val("");
+        $("#Port").val("");
+        $("#CertificateId").attr("disabled", "disabled");
+    }
 </script>

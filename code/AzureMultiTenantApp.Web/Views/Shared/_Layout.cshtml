@@ -13,29 +13,18 @@
     <div class="page">
         <header>
             <div id="title">
-                <h1>WebSite Manager</h1>
+                <h1>
+                    WebSite Manager</h1>
             </div>
             <div id="logindisplay">
                 @Html.Partial("_LogOnPartial")
             </div>
-            <div style="clear:both;"></div>
-
-            @{
-                var isEnabled = Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Services.SyncService.IsSyncEnabled();
-                }
-            <nav>
-                <ul id="menu">
-                    <li>@Html.ActionLink("Web Sites", "Index", "WebSite")</li>
-                    <li>@Html.ActionLink((isEnabled ? "Disable Sync" : "Enable Sync"), "SyncChange", "Sync", new { enable = !isEnabled }, new { })</li>
-                </ul>
-            </nav>
+            <div style="clear: both;">
+            </div>
         </header>
         <section id="main">
             @RenderBody()
         </section>
-        <footer>
-            @Html.Raw((!isEnabled ? "<br><div style='color:Red; font-weight:bold'>Synchronization is disabled. Enable Sync to resume site synchronization between role instances.</div>" : string.Empty))
-        </footer>
     </div>
 </body>
 </html>

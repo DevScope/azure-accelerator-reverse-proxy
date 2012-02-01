@@ -10,9 +10,17 @@
     using System.Diagnostics;
     using System.Web.Helpers;
     using System.IO;
+    using Microsoft.WindowsAzure.ServiceRuntime;
 
     public class CertificateRepository
     {
+
+        private string certsFilePath;
+
+        public CertificateRepository()
+        {
+            this.certsFilePath = Path.Combine(RoleEnvironment.GetLocalResource("Config").RootPath, "certs.json");
+        }
 
         public void PopulateRepository()
         {
@@ -32,19 +40,15 @@
             }
             store.Close();
 
-            string appRoot = Environment.GetEnvironmentVariable("RoleRoot");
-            var temp = Path.Combine(appRoot, "approot\\bin\\certs.json");
             var json = Json.Encode(certificates);
-            File.WriteAllText(temp, json);
+            File.WriteAllText(certsFilePath, json);
         }
 
         public List<Certificate> RetrieveCertificates()
         {
-            string appRoot = Environment.GetEnvironmentVariable("RoleRoot");
-            var temp = Path.Combine(appRoot, "approot\\bin\\certs.json");
             try
             {
-                var json = File.ReadAllText(temp);
+                var json = File.ReadAllText(certsFilePath);
                 return Json.Decode<List<Certificate>>(json);
             }
             catch (Exception ex)

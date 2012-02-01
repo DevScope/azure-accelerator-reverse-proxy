@@ -8,6 +8,7 @@
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Storage;
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Models;
+    using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Services;
 
     [Authorize]
     public class WebSiteController : Controller
@@ -38,6 +39,8 @@
                     Url = this.GetDefaultBindingUrl(s),
                     TestUrl = this.GetDefaultBindingTestUrl(s)
                 });
+
+            ViewBag.IsSyncEnabled = SyncService.IsSyncEnabled();
             
             return View("List", model);
         }
