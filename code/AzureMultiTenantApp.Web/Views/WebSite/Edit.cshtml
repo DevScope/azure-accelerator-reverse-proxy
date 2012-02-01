@@ -107,13 +107,13 @@
                     
                 </td>
                 <td>
-                    @if (!binding.CertificateId.HasValue || binding.CertificateId.Value == Guid.Empty)
+                    @if (!String.IsNullOrEmpty(binding.CertificateThumbprint))
                     { 
-                        <text>&nbsp;</text>
+                        <text>N/A</text>
                     }
                     else
                     { 
-                        <a href="/Certificate/Details/@binding.CertificateId.Value" title="Details"><span class="ui-icon ui-icon-note" style="float:right; margin-right:10px;" /></a>
+                        @binding.CertificateThumbprint;
                     }
                 </td>
                 <td>

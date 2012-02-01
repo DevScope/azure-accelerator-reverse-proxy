@@ -16,15 +16,15 @@
     using Microsoft.Web.Administration;
     using Microsoft.WindowsAzure.ServiceRuntime;
 
-    public class IISManager : IIISManager
+    public class IISManager
     {
-        private readonly ISyncStatusRepository syncStatusRepository;
+        private readonly SyncStatusRepository syncStatusRepository;
         private readonly string localSitesPath;
         private readonly string tempSitesPath;
 
         private static string roleWebSiteName = RoleEnvironment.IsAvailable ? RoleEnvironment.CurrentRoleInstance.Id + "_" + "Web" : "Default Web Site";
 
-        public IISManager(string localSitesPath, string tempSitesPath, ISyncStatusRepository syncStatusRepository)
+        public IISManager(string localSitesPath, string tempSitesPath, SyncStatusRepository syncStatusRepository)
         {
             this.syncStatusRepository = syncStatusRepository;
             this.localSitesPath = localSitesPath;
@@ -145,9 +145,9 @@
 
                         X509Certificate2 cert = null;
 
-                        if (defaultBinding.Certificate != null && defaultBinding.Certificate.Content.Count() > 0)
+                        if (!String.IsNullOrEmpty(defaultBinding.CertificateThumbprint))
                         {
-                            cert = InstallCertificate(siteName, defaultBinding.Certificate.Content, defaultBinding.Certificate.Password);
+                            cert = GetCertificate(defaultBinding.CertificateThumbprint);
                         }
 
                         if (cert != null)
@@ -191,7 +191,7 @@
                         this.UpdateSyncStatus(siteName, SyncInstanceStatus.Created);
                     }
                     else
-                    { 
+                    {
                         // Update TEST and CDN applications
                         var appPool = serverManager.ApplicationPools.SingleOrDefault(ap => ap.Name.Equals(siteName, StringComparison.OrdinalIgnoreCase));
                         UpdateApplications(site, serverManager, siteName, sitePath, appPool);
@@ -217,9 +217,9 @@
 
                             X509Certificate2 cert = null;
 
-                            if (binding.Certificate != null && binding.Certificate.Content != null && binding.Certificate.Content.Count() > 0)
+                            if (!String.IsNullOrEmpty(binding.CertificateThumbprint))
                             {
-                                cert = InstallCertificate(siteName, binding.Certificate.Content, binding.Certificate.Password);
+                                cert = GetCertificate(binding.CertificateThumbprint);
                             }
 
                             if (cert != null)
@@ -247,6 +247,22 @@
                     }
                 }
             }
+        }
+
+        private X509Certificate2 GetCertificate(string certificateHash)
+        {
+            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.ReadWrite);
+            var certs = store.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, true);
+            store.Close();
+
+            X509Certificate2 cert = null;
+            if (certs.Count == 1)
+            {
+                cert = certs[0];
+            }
+
+            return cert;
         }
 
         private static void UpdateApplications(WebSite site, ServerManager serverManager, string siteName, string sitePath, ApplicationPool appPool)
@@ -301,28 +317,6 @@
             return address + ":" + port.ToString(CultureInfo.InvariantCulture) + ":" + hostName;
         }
 
-        private static X509Certificate2 InstallCertificate(string siteName, byte[] rawData, string password)
-        {
-            try
-            {
-                var cert = new X509Certificate2(rawData, password);
-
-                var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-                store.Open(OpenFlags.ReadWrite);
-                store.Add(cert);
-                store.Close();
-
-                return cert;
-            }
-            catch
-            {
-                // Ignore if invalid
-                Trace.TraceWarning("IISManager.Invalid Certificate for site '{0}'", siteName);
-            }
-
-            return null;
-        }
-
         private static bool AreEqualsBindings(Microsoft.Web.Administration.Binding iisBinding, Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Entities.Binding binding)
         {
             var bindingAdress = binding.IpAddress == "*" ? "0.0.0.0" : binding.IpAddress;
@@ -339,9 +333,9 @@
             var adminSite = iisSites[roleWebSiteName];
 
             var applicationsToRemove = from app in adminSite.Applications
-                                             where app.Path.EndsWith("/test/" + siteName, StringComparison.OrdinalIgnoreCase) ||
-                                             app.Path.EndsWith("/cdn/" + siteName, StringComparison.OrdinalIgnoreCase)
-                                             select app;
+                                       where app.Path.EndsWith("/test/" + siteName, StringComparison.OrdinalIgnoreCase) ||
+                                       app.Path.EndsWith("/cdn/" + siteName, StringComparison.OrdinalIgnoreCase)
+                                       select app;
 
             Trace.TraceInformation("IISManager.Removing Test and CDN applications for site '{0}'", siteName);
 

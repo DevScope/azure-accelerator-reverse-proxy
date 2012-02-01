@@ -11,14 +11,14 @@
     [Authorize]
     public class SyncController : Controller
     {
-        private readonly ISyncStatusRepository syncStatusRepository;
+        private readonly SyncStatusRepository syncStatusRepository;
 
         public SyncController()
             : this(new SyncStatusRepository())
         {
         }
 
-        public SyncController(ISyncStatusRepository syncStatusRepository)
+        public SyncController(SyncStatusRepository syncStatusRepository)
         {
             this.syncStatusRepository = syncStatusRepository;
         }

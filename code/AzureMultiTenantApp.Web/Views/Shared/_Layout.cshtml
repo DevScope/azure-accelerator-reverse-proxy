@@ -26,7 +26,6 @@
             <nav>
                 <ul id="menu">
                     <li>@Html.ActionLink("Web Sites", "Index", "WebSite")</li>
-                    <li>@Html.ActionLink("Certificates", "Index", "Certificate")</li>
                     <li>@Html.ActionLink((isEnabled ? "Disable Sync" : "Enable Sync"), "SyncChange", "Sync", new { enable = !isEnabled }, new { })</li>
                 </ul>
             </nav>

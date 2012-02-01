@@ -74,28 +74,16 @@
     <Compile Include="Controllers\WebSiteControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IISManagerTests.cs" />
-    <Compile Include="Storage\CertificateRepositoryTests.cs" />
     <Compile Include="Storage\WebSiteRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
-    <Content Include="Resources\azureacceleratorstest.cloudapp.net.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureMultiTenantApp.Web\AzureMultiTenantApp.Web.csproj">
       <Project>{AB0C275A-7C67-4D5A-BFC8-52B490FF6516}</Project>
       <Name>AzureMultiTenantApp.Web</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\azureacceleratorstest.cloudapp.net.cer">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\azureacceleratorstest.cloudapp.net.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

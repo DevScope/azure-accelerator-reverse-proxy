@@ -92,7 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\SyncController.cs" />
     <Compile Include="Controllers\WebSiteController.cs" />
     <Compile Include="Core\Entities\Binding.cs" />
@@ -107,21 +106,15 @@
     <Compile Include="Core\Extensions\ModelExtensions.cs" />
     <Compile Include="Core\Extensions\TableStorageExtensionMethods.cs" />
     <Compile Include="Core\Helpers\FilesHelper.cs" />
-    <Compile Include="Core\Services\IIISManager.cs" />
     <Compile Include="Core\Services\IISManager.cs" />
-    <Compile Include="Core\Services\ISyncService.cs" />
     <Compile Include="Core\Services\SyncService.cs" />
     <Compile Include="Core\Storage\AzureBlobContainer.cs" />
     <Compile Include="Core\Storage\AzureTable.cs" />
     <Compile Include="Core\Storage\BindingRow.cs" />
     <Compile Include="Core\Storage\CertificateRepository.cs" />
-    <Compile Include="Core\Storage\CertificateRow.cs" />
-    <Compile Include="Core\Storage\SyncStatusRepository.cs" />
     <Compile Include="Core\Storage\IAzureBlobContainer.cs" />
     <Compile Include="Core\Storage\IAzureTable.cs" />
-    <Compile Include="Core\Storage\ICertificateRepository.cs" />
-    <Compile Include="Core\Storage\ISyncStatusRepository.cs" />
-    <Compile Include="Core\Storage\IWebSiteRepository.cs" />
+    <Compile Include="Core\Storage\SyncStatusRepository.cs" />
     <Compile Include="Core\Storage\SyncStatusRow.cs" />
     <Compile Include="Core\Storage\WebSiteRow.cs" />
     <Compile Include="Core\Storage\WebSiteRepository.cs" />
@@ -131,7 +124,6 @@
     </Compile>
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\CertificateModels.cs" />
     <Compile Include="Models\SyncModels.cs" />
     <Compile Include="Models\WebSiteModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -197,9 +189,6 @@
     <Content Include="Views\WebSite\Edit.cshtml" />
     <Content Include="Views\WebSite\Create.cshtml" />
     <Content Include="Views\WebSite\EditBinding.cshtml" />
-    <Content Include="Views\Certificate\Create.cshtml" />
-    <Content Include="Views\Certificate\Details.cshtml" />
-    <Content Include="Views\Certificate\List.cshtml" />
     <Content Include="Views\WebSite\List.cshtml" />
     <Content Include="Views\WebSite\CreateBinding.cshtml" />
     <Content Include="Views\Sync\Index.cshtml" />

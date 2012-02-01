@@ -276,7 +276,7 @@
                 binding.HostName = "www.newhost.com";
                 binding.IpAddress = "127.0.0.2";
                 binding.Protocol = "https";
-                binding.CertificateId = Guid.NewGuid();
+                binding.CertificateThumbprint = Guid.NewGuid().ToString();
                 this.repository.UpdateBinding(binding);
 
                 var newbinding = this.bindingTable.Query.Where(b => b.RowKey == idb).FirstOrDefault();
@@ -284,7 +284,7 @@
                 Assert.AreEqual(binding.HostName, newbinding.HostName);
                 Assert.AreEqual(binding.IpAddress, newbinding.IpAddress);
                 Assert.AreEqual(binding.Protocol, newbinding.Protocol);
-                Assert.AreEqual(binding.CertificateId, newbinding.CertificateId);
+                Assert.AreEqual(binding.CertificateThumbprint, newbinding.CertificateThumbprint);
             }
             finally
             {

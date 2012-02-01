@@ -12,15 +12,15 @@
     [Authorize]
     public class WebSiteController : Controller
     {
-        private readonly IWebSiteRepository webSiteRepository;
-        private readonly ICertificateRepository certificateRepository;
+        private readonly WebSiteRepository webSiteRepository;
+        private readonly CertificateRepository certificateRepository;
 
         public WebSiteController()
             : this(new WebSiteRepository(), new CertificateRepository())
         {
         }
 
-        public WebSiteController(IWebSiteRepository webSiteRepository, ICertificateRepository certificateRepository)
+        public WebSiteController(WebSiteRepository webSiteRepository, CertificateRepository certificateRepository)
         {
             this.webSiteRepository = webSiteRepository;
             this.certificateRepository = certificateRepository;
@@ -44,7 +44,7 @@
 
         public ActionResult Edit(Guid id)
         {
-            var website = this.webSiteRepository.RetrieveWebSiteWithBindingsAndCertificates(id, this.certificateRepository);
+            var website = this.webSiteRepository.RetrieveWebSiteWithBindings(id);
             var model = new WebSiteModel
             {
                 Id = website.Id,
@@ -55,8 +55,7 @@
                 Bindings = website.Bindings.Select(b => new BindingModel
                 {
                     Id = b.Id,
-                    CertificateId = b.CertificateId,
-                    CertificateName = b.Certificate != null ? b.Certificate.Name : string.Empty,
+                    CertificateThumbprint = b.CertificateThumbprint,
                     HostName = b.HostName,
                     IpAddress = b.IpAddress,
                     Port = b.Port,
@@ -124,7 +123,7 @@
                     return View(model);
                 }
 
-                if (this.ValidateCertificateAndPort(model.CertificateId, model.Port, model.Protocol))
+                if (this.ValidateCertificateAndPort(model.CertificateThumbprint, model.Port, model.Protocol))
                 {
                     var webSite = new WebSite()
                     {
@@ -140,7 +139,7 @@
                         Protocol = model.Protocol,
                         HostName = model.HostName,
                         IpAddress = model.IpAddress,
-                        CertificateId = model.CertificateId
+                        CertificateThumbprint = model.CertificateThumbprint
                     };
 
                     this.webSiteRepository.CreateWebSiteWithBinding(webSite, binding);
@@ -178,7 +177,7 @@
                 Protocol = "http",
                 Port = 80,
                 IpAddress = "*",
-                CertificateId = null,
+                CertificateThumbprint = null,
                 Certificates = this.GetCertificatesList()
             };
 
@@ -196,7 +195,7 @@
                     return View(model);
                 }
 
-                if (this.ValidateCertificateAndPort(model.CertificateId, model.Port, model.Protocol))
+                if (this.ValidateCertificateAndPort(model.CertificateThumbprint, model.Port, model.Protocol))
                 {
                     var binding = new Binding()
                     {
@@ -204,7 +203,7 @@
                         Protocol = model.Protocol,
                         HostName = model.HostName,
                         IpAddress = model.IpAddress,
-                        CertificateId = model.CertificateId
+                        CertificateThumbprint = model.CertificateThumbprint
                     };
 
                     this.webSiteRepository.AddBindingToWebSite(webSiteId, binding);
@@ -237,7 +236,7 @@
                 IpAddress = binding.IpAddress,
                 Port = binding.Port,
                 HostName = binding.HostName,
-                CertificateId = binding.CertificateId,
+                CertificateThumbprint = binding.CertificateThumbprint,
                 Certificates = this.GetCertificatesList()
             };
 
@@ -255,14 +254,14 @@
                     return View(model);
                 }
 
-                if (this.ValidateCertificateAndPort(model.CertificateId, model.Port, model.Protocol))
+                if (this.ValidateCertificateAndPort(model.CertificateThumbprint, model.Port, model.Protocol))
                 {
                     Binding binding = this.webSiteRepository.RetrieveBinding(id);
                     binding.Port = model.Port;
                     binding.Protocol = model.Protocol;
                     binding.HostName = model.HostName;
                     binding.IpAddress = model.IpAddress;
-                    binding.CertificateId = model.CertificateId;
+                    binding.CertificateThumbprint = model.CertificateThumbprint;
 
                     this.webSiteRepository.UpdateBinding(binding);
 
@@ -295,28 +294,28 @@
                 .Select(
                     c => new SelectListItem
                     {
-                        Value = c.Id.ToString(),
-                        Text = c.Name
+                        Value = c.Thumbprint,
+                        Text = c.Thumbprint
                     })
                 .ToList();
         }
 
-        private bool ValidateCertificateAndPort(Guid? certificateId, int port, string protocol)
+        private bool ValidateCertificateAndPort(string certificateHash, int port, string protocol)
         {
             if (protocol.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
-                if (!certificateId.HasValue)
+                if (String.IsNullOrEmpty(certificateHash))
                 {
-                    ModelState.AddModelError("CertificateId", "You must select an SSL certificate to create an https binding.");
+                    ModelState.AddModelError("CertificateHash", "You must select an SSL certificate to create an https binding.");
                     return false;
                 }
                 else
                 {
                     foreach (var bind in this.webSiteRepository.RetrieveBindingsForPort(port))
                     {
-                        if (bind.CertificateId != certificateId)
+                        if (bind.CertificateThumbprint != certificateHash)
                         {
-                            ModelState.AddModelError("CertificateId", "The selected port has a different SSL certificate already associated with it.");
+                            ModelState.AddModelError("CertificateHash", "The selected port has a different SSL certificate already associated with it.");
                             return false;
                         }
                     }

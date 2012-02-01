@@ -8,7 +8,7 @@
     using Microsoft.WindowsAzure;
     using Microsoft.WindowsAzure.ServiceRuntime;
 
-    public class SyncStatusRepository : ISyncStatusRepository
+    public class SyncStatusRepository
     {
         private readonly IAzureTable<SyncStatusRow> table;
 

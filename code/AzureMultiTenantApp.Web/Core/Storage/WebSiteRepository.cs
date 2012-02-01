@@ -7,7 +7,7 @@
     using Microsoft.Samples.DPE.AzureMultiTenantApp.Web.Core.Extensions;
     using Microsoft.WindowsAzure;
 
-    public class WebSiteRepository : IWebSiteRepository
+    public class WebSiteRepository
     {
         private readonly AzureTable<WebSiteRow> webSiteTable;
         private readonly AzureTable<BindingRow> bindingTable;
@@ -115,33 +115,18 @@
             return website;
         }
 
-        public WebSite RetrieveWebSiteWithBindingsAndCertificates(Guid webSiteId, ICertificateRepository certificateRepository)
-        {
-            WebSite website = this.RetrieveWebSiteWithBindings(webSiteId);
-
-            if (website.Bindings != null) 
-            {
-                foreach (var binding in website.Bindings)
-                {
-                    certificateRepository.RetrieveCertificateForBinding(binding);
-                }
-            }
-
-            return website;
-        }
-
         public IEnumerable<Binding> RetrieveWebSiteBindings(Guid webSiteId)
         {
             return this.bindingTable.Query.Where(b => b.WebSiteId == webSiteId).ToList().Select(b => b.ToModel()).ToList();
         }
 
-        public IEnumerable<Binding> RetrieveCertificateBindings(Guid certificateId)
+        public IEnumerable<Binding> RetrieveCertificateBindings(string certificateHash)
         {
-            var bindings = this.bindingTable.Query.Where(b => b.CertificateId == certificateId).ToList().Select(b => b.ToModel()).ToList();
+            var bindings = this.bindingTable.Query.Where(b => b.CertificateThumbprint == certificateHash).ToList().Select(b => b.ToModel()).ToList();
 
             var sites = new Dictionary<Guid, WebSite>();
 
-            foreach (var binding in bindings) 
+            foreach (var binding in bindings)
             {
                 if (!sites.ContainsKey(binding.WebSiteId))
                 {
@@ -177,23 +162,6 @@
             foreach (var site in sites)
             {
                 site.Bindings = this.RetrieveWebSiteBindings(site.Id);
-            }
-
-            return sites;
-        }
-
-        public IEnumerable<WebSite> RetrieveWebSitesWithBindingsAndCertificates(ICertificateRepository certificateRepository)
-        {
-            var sites = this.RetrieveWebSites();
-
-            foreach (var site in sites)
-            {
-                site.Bindings = this.RetrieveWebSiteBindings(site.Id);
-
-                foreach (var binding in site.Bindings)
-                {
-                    certificateRepository.RetrieveCertificateForBinding(binding);
-                }
             }
 
             return sites;

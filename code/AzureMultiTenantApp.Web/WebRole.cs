@@ -20,7 +20,7 @@
 
     public class WebRole : RoleEntryPoint
     {
-        private ISyncService syncService;
+        private SyncService syncService;
 
         public override bool OnStart()
         {
@@ -51,6 +51,10 @@
             // unless you ensure that the TEMP/TMP target directory has sufficient space
             Environment.SetEnvironmentVariable("TMP", localTempPath);
             Environment.SetEnvironmentVariable("TEMP", localTempPath);
+
+            // Populate the certificate repository.
+            var certRepo = new CertificateRepository();
+            certRepo.PopulateRepository();
 
             // Create the sync service and update the sites status
             this.syncService = new SyncService(localSitesPath, localTempPath, directoriesToExclude, "DataConnectionstring");
@@ -139,7 +143,7 @@
         private static string GetLocalResourcePathAndSetAccess(string localResourceName)
         {
             string resourcePath = RoleEnvironment.GetLocalResource(localResourceName).RootPath.TrimEnd('\\');
-
+    
             var localDataSec = Directory.GetAccessControl(resourcePath);
             localDataSec.AddAccessRule(new FileSystemAccessRule(new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
             Directory.SetAccessControl(resourcePath, localDataSec);

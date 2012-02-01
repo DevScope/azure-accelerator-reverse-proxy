@@ -40,8 +40,6 @@
 
         public string HostName { get; set; }
 
-        public Guid? CertificateId { get; set; }
-
-        public Certificate Certificate { get; set; }
+        public string CertificateThumbprint { get; set; }
     }
 }

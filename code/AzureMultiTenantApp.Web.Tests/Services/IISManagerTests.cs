@@ -31,7 +31,6 @@
         }
 
         [TestMethod]
-        [DeploymentItem("Resources\\azureacceleratorstest.cloudapp.net.pfx")]
         public void UpdateSitesWithInitialBindings()
         {
             var contosoWebSite = new WebSite
@@ -48,7 +47,7 @@
                 Name = fabrikamWebSiteName, 
                 Bindings = new List<Binding>
                 {
-                    new Binding { Protocol = "https", IpAddress = "*", Port = 8443, Certificate = new Certificate { Content = File.ReadAllBytes("azureacceleratorstest.cloudapp.net.pfx"), Password = "Passw0rd!" } },
+                    new Binding { Protocol = "https", IpAddress = "*", Port = 8443, CertificateThumbprint = "12354" },
                     new Binding { Protocol = "http", IpAddress = "127.0.0.1", Port = 8082 }
                 }
             };
@@ -95,7 +94,6 @@
         }
 
         [TestMethod]
-        [DeploymentItem("Resources\\azureacceleratorstest.cloudapp.net.pfx")]
         public void UpdateSitesAddingBindings()
         {
             var contosoWebSite = new WebSite
@@ -120,7 +118,7 @@
 
             // Add a new binding (https)
             var contosoBindings = contosoWebSite.Bindings.ToList();
-            contosoBindings.Add(new Binding { Protocol = "https", IpAddress = "10.0.0.1", Port = 8443, Certificate = new Certificate { Content = File.ReadAllBytes("azureacceleratorstest.cloudapp.net.pfx"), Password = "Passw0rd!" } });
+            contosoBindings.Add(new Binding { Protocol = "https", IpAddress = "10.0.0.1", Port = 8443, CertificateThumbprint = "12345" });
             contosoWebSite.Bindings = contosoBindings;
 
             iisManager.UpdateSites(sites);
@@ -149,7 +147,6 @@
         }
 
         [TestMethod]
-        [DeploymentItem("Resources\\azureacceleratorstest.cloudapp.net.pfx")]
         public void UpdateSitesRemovingBindings()
         {
             var fabrikamWebSite = new WebSite
@@ -157,7 +154,7 @@
                 Name = fabrikamWebSiteName,
                 Bindings = new List<Binding>
                 {
-                    new Binding { Protocol = "https", IpAddress = "127.0.0.1", Port = 8443, Certificate = new Certificate { Content = File.ReadAllBytes("azureacceleratorstest.cloudapp.net.pfx"), Password = "Passw0rd!" } },
+                    new Binding { Protocol = "https", IpAddress = "127.0.0.1", Port = 8443, CertificateThumbprint = "12345" },
                     new Binding { Protocol = "http", IpAddress = "127.0.0.1", Port = 8082 }
                 }
             };
@@ -197,7 +194,6 @@
         }
 
         [TestMethod]
-        [DeploymentItem("Resources\\azureacceleratorstest.cloudapp.net.pfx")]
         public void UpdateSitesRemovingSite()
         {
             var contosoWebSite = new WebSite
@@ -214,7 +210,7 @@
                 Name = fabrikamWebSiteName,
                 Bindings = new List<Binding>
                 {
-                    new Binding { Protocol = "https", IpAddress = "127.0.0.1", Port = 8443, Certificate = new Certificate { Content = File.ReadAllBytes("azureacceleratorstest.cloudapp.net.pfx"), Password = "Passw0rd!" } }
+                    new Binding { Protocol = "https", IpAddress = "127.0.0.1", Port = 8443, CertificateThumbprint = "12345" }
                 }
             };
 

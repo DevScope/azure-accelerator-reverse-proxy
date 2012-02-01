@@ -53,7 +53,7 @@
                 HostName = row.HostName ?? string.Empty,
                 IpAddress = row.IpAddress,
                 WebSiteId = row.WebSiteId,
-                CertificateId = row.CertificateId
+                CertificateThumbprint = row.CertificateThumbprint
             };
         }
 
@@ -71,37 +71,7 @@
                 IpAddress = model.IpAddress,
                 Port = model.Port,
                 HostName = model.HostName,
-                CertificateId = model.CertificateId
-            };
-        }
-
-        public static Certificate ToModel(this CertificateRow row)
-        {
-            if (row == null)
-            {
-                return null;
-            }
-
-            return new Certificate(new Guid(row.RowKey))
-            {
-                Name = row.Name,
-                Description = row.Description,
-                Password = row.Password
-            };
-        }
-
-        public static CertificateRow ToRow(this Certificate model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-
-            return new CertificateRow(model.Id)
-            {
-                Name = model.Name,
-                Description = model.Description,
-                Password = model.Password
+                CertificateThumbprint = model.CertificateThumbprint
             };
         }
 

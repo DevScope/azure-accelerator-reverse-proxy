@@ -59,7 +59,7 @@
         public string HostName { get; set; }
 
         [Display(Name = "SSL certificate", Description = "Select the certificate that you want the site to use for SSL.")]
-        public Guid? CertificateId { get; set; }
+        public string CertificateThumbprint { get; set; }
 
         [Required]
         [Display(Description = "The test site will point to the same physical folder of the website you are setting up.")]
@@ -100,9 +100,7 @@
         public string HostName { get; set; }
 
         [Display(Name = "SSL certificate", Description = "Select the certificate that you want the site to use for SSL.")]
-        public Guid? CertificateId { get; set; }
-
-        public string CertificateName { get; set; }
+        public string CertificateThumbprint { get; set; }
 
         public string Url { get; set; }
 

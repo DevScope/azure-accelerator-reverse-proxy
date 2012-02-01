@@ -16,13 +16,13 @@
     using Microsoft.WindowsAzure.ServiceRuntime;
     using Microsoft.WindowsAzure.StorageClient;
 
-    public class SyncService : ISyncService
+    public class SyncService
     {
         private const string BlobStopName = "stop";
 
-        private readonly IWebSiteRepository sitesRepository;
-        private readonly ICertificateRepository certificateRepository;
-        private readonly ISyncStatusRepository syncStatusRepository;
+        private readonly WebSiteRepository sitesRepository;
+        private readonly CertificateRepository certificateRepository;
+        private readonly SyncStatusRepository syncStatusRepository;
 
         private readonly string localSitesPath;
         private readonly string localTempPath;
@@ -38,7 +38,7 @@
         public SyncService(string localSitesPath, string localTempPath, IEnumerable<string> directoriesToExclude, string storageSettingName)
             : this(
                     new WebSiteRepository(storageSettingName),
-                    new CertificateRepository(storageSettingName),
+                    new CertificateRepository(),
                     new SyncStatusRepository(storageSettingName),
                     CloudStorageAccount.FromConfigurationSetting(storageSettingName),
                     localSitesPath,
@@ -47,7 +47,7 @@
         {
         }
 
-        public SyncService(IWebSiteRepository sitesRepository, ICertificateRepository certificateRepository, ISyncStatusRepository syncStatusRepository, CloudStorageAccount storageAccount, string localSitesPath, string localTempPath, IEnumerable<string> directoriesToExclude)
+        public SyncService(WebSiteRepository sitesRepository, CertificateRepository certificateRepository, SyncStatusRepository syncStatusRepository, CloudStorageAccount storageAccount, string localSitesPath, string localTempPath, IEnumerable<string> directoriesToExclude)
         {
             this.sitesRepository = sitesRepository;
             this.certificateRepository = certificateRepository;
@@ -219,7 +219,7 @@
 
         private void UpdateIISSitesFromTableStorage()
         {
-            var allSites = this.sitesRepository.RetrieveWebSitesWithBindingsAndCertificates(this.certificateRepository);
+            var allSites = this.sitesRepository.RetrieveWebSitesWithBindings();
 
             if (!WindowsAzureHelper.IsComputeEmulatorEnvironment)
             {
@@ -462,8 +462,7 @@
 
                         Trace.TraceInformation("SyncService [IIS => Local Storage] - Site last modified time: '{0}'", siteLastModifiedTime);
 
-                        //if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime > DateTime.UtcNow.AddSeconds(30))
-                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime)
+                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime > DateTime.UtcNow.AddSeconds(30))
                         {
                             this.UpdateSyncStatus(siteName, SyncInstanceStatus.Deployed);
 
