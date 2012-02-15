@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<DependencyCheckerConfiguration version="2.0">
+  <title>Windows Azure Accelerator for Web Roles</title>
+  
+  <dependencies>
+	<dependency 
+		hint="MVC3" 
+		name="Microsoft ASP.NET MVC 3" 
+		helpLink="http://go.microsoft.com/fwlink/?LinkID=208140"
+		disableSkip="true"
+		type="WebPI" />
+
+    <dependency
+        hint="WindowsAzureToolsVS2010"
+        name="Windows Azure SDK for .NET - November 2011"
+        helpLink="https://www.windowsazure.com/en-us/develop/net/"
+        disableSkip="true"
+        type="WebPI" />
+
+  </dependencies>
+</DependencyCheckerConfiguration>

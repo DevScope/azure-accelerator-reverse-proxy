@@ -32,7 +32,6 @@
   </PropertyGroup>
   <!-- Items for the project -->
   <ItemGroup>
-    <ServiceConfiguration Include="ServiceConfiguration.Development.cscfg" />
     <ServiceDefinition Include="ServiceDefinition.csdef" />
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
@@ -47,9 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Profiles" />
-  </ItemGroup>
-  <ItemGroup>
-    <PublishProfile Include="Profiles\Development.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
