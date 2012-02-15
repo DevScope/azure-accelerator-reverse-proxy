@@ -19,7 +19,6 @@
       <InternalEndpoint name="UnusedInternal" protocol="http" port="88" />
     </Endpoints>
     <Imports>
-      <Import moduleName="Diagnostics" />
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
     </Imports>
