@@ -462,7 +462,7 @@
 
                         Trace.TraceInformation("SyncService [IIS => Local Storage] - Site last modified time: '{0}'", siteLastModifiedTime);
 
-                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime > DateTime.UtcNow.AddSeconds(30))
+                        if (this.siteDeployTimes[siteName] < siteLastModifiedTime && siteLastModifiedTime.AddSeconds(30) < DateTime.UtcNow)
                         {
                             this.UpdateSyncStatus(siteName, SyncInstanceStatus.Deployed);
 
