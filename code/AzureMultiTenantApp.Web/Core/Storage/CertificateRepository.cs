@@ -30,13 +30,10 @@
             var certificates = new List<Certificate>();
             foreach (var cert in store.Certificates)
             {
-                if (!String.IsNullOrEmpty(cert.FriendlyName))
-                {
                     certificates.Add(new Certificate
                     {
                         Thumbprint = cert.Thumbprint,
                     });
-                }
             }
             store.Close();
 
