@@ -3,6 +3,7 @@
   <Role name="AzureMultiTenantApp.Web">
     <Instances count="2" />
     <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="DataConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="SitesContainerName" value="sites" />
       <Setting name="DirectoriesToExclude" value="App_Data/TEMP;TEMP" />
