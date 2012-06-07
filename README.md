@@ -1,7 +1,7 @@
 # [DEPRECATED] Windows Azure Accelerator for Web Roles #
 
-# Notice
-With the release of [Windows Azure Web Sites](http://www.windowsazure.com/en-us/home/scenarios/web-sites/) we have no plans to continue updating this project. The vast majority of use cases for this project have been solved by Windows Azure Web Sites and as such we recommend migrating yours sites. In the coming weeks I will write documentation on how to best migrate from the Accelerator for Web Roles to Windows Azure Web Sites. If you have any questions please open an issue - we are happy to help in any way we can.
+## Notice
+With the release of [Windows Azure Web Sites](http://www.windowsazure.com/en-us/home/scenarios/web-sites/) we have no plans to continue updating this project. The vast majority of use cases for this project have been solved by Windows Azure Web Sites and as such we recommend migrating yours sites. If you have any questions please open an issue - we are happy to help in any way we can.
 
 ## About
 The Windows Azure Accelerator for Web Roles makes it quick and easy for you to deploy one or more websites across multiple Web Role instances using Web Deploy. The accelerator includes a Visual Studio project template that creates a Windows Azure web role to host one or more websites. Once you have deployed this Web Role you can deploy your websites to Windows Azure using Web Deploy. Deployments to Windows Azure using Web Deploy take only about 30 seconds. Additionally, this tool will work with roles that have a single or many instances so you can scale up to handle as much traffic as you need.
