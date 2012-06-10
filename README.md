@@ -10,8 +10,8 @@ Before you download and use this accelerator it is important to understand what 
 
 ## Documentation ##
 * [Home](../../wiki)
-* [Setup and Configuration](../../Setup-and-Configuration)
-* [Deploying](../../Deploying)
-* [Changing Portal Credentials](../../portal-credentials)
-* [Modifying Service Endpoints](../../service-endpoints)
-* [Known Issues](../../known-issues)
+* [Setup and Configuration](../../wiki/Setup-and-Configuration)
+* [Deploying](../../wiki/Deploying)
+* [Changing Portal Credentials](../../wiki/portal-credentials)
+* [Modifying Service Endpoints](../../wiki/service-endpoints)
+* [Known Issues](../../wiki/known-issues)
