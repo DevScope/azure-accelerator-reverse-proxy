@@ -29,6 +29,111 @@
 						<p>
 							<img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="image" border="0" alt="image" src="publish.png" width="420" height="578"/>
 						</p>
+                        </li><li>
+                        <p>
+							Edit your projects web.config file a add some url rewrite routes. For example add this to your 
+                            &lt;configuration&gt;:</p>
+					
+                        <pre style="font-family: Consolas; font-size: 16; color: black; background: white;"><span 
+                            style="color:blue;">&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">system.webServer</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">modules</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">runAllManagedModulesForAllRequests</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">true</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">rewrite</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">rules</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">clear</span><span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">name</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">ignore a folder</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">enabled</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">true</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">stopProcessing</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">true</span>&quot;<span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">match</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">url</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">subfolder/(.*)|crossdomain.xml|clientaccesspolicy.xml</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">conditions</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">logicalGrouping</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">MatchAll</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">trackAllCaptures</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">false</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">action</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">type</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">None</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">name</span><span 
+                            style="color:blue;">=</span>&quot;route a folder somewhere&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">stopProcessing</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">true</span>&quot;<span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">match</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">url</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">myRemoteFolder/(.*)</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">conditions</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">logicalGrouping</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">MatchAll</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">trackAllCaptures</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">false</span>&quot;<span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">add</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">input</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">{CACHE_URL}</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">pattern</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">^(https?)://</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">conditions</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">action</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">type</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">Rewrite</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">url</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">{C:1}://www.bing.com/{R:0}</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">name</span><span 
+                            style="color:blue;">=</span>&quot;default route&quot;<span style="color:blue;">&nbsp;</span><span 
+                            style="color:red;">stopProcessing</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">true</span>&quot;<span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">match</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">url</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">(.*)</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">conditions</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">logicalGrouping</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">MatchAll</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">trackAllCaptures</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">false</span>&quot;<span 
+                            style="color:blue;">&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;</span><span style="color:#a31515;">action</span><span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">type</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">Rewrite</span>&quot;<span 
+                            style="color:blue;">&nbsp;</span><span style="color:red;">url</span><span 
+                            style="color:blue;">=</span>&quot;<span style="color:blue;">http://www.microsoft.com/{R:1}</span>&quot;<span 
+                            style="color:blue;">&nbsp;&nbsp;/&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">rule</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">rules</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">rewrite</span><span 
+                            style="color:blue;">&gt;</span>
+<span style="color:blue;">&nbsp;&nbsp;&lt;/</span><span style="color:#a31515;">system.webServer</span><span 
+                            style="color:blue;">&gt;</span></pre>
+              
 					</li>
 				</ol>
 			</p>

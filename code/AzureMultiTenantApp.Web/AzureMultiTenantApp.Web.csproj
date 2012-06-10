@@ -180,6 +180,9 @@
     <Folder Include="test\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Startup\configureARR.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Startup\ConfigureIIS.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
